@@ -1,0 +1,11 @@
+
+    <RelativeLayout android:id="@+id/relativeLayout1" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
+        <TextView android:id="@+id/textView1" android:layout_width="wrap_content" android:text="Server:" android:layout_height="wrap_content"></TextView>
+        <EditText android:layout_width="fill_parent" android:id="@+id/Server" android:text="Server" android:layout_height="wrap_content" android:layout_below="@+id/textView1"></EditText>
+        <TextView android:id="@+id/Port_Text" android:layout_width="wrap_content" android:text="Port:" android:layout_height="wrap_content" android:layout_below="@+id/Server"></TextView>
+        <EditText android:layout_width="fill_parent" android:id="@+id/Port" android:text="Port" android:layout_height="wrap_content" android:layout_below="@+id/Port_Text" android:numeric="decimal" android:maxLength="4"></EditText>
+        <TextView android:id="@+id/textView2" android:layout_width="wrap_content" android:text="Update Interval:" android:layout_height="wrap_content" android:layout_below="@+id/Port"></TextView>
+        <Spinner android:id="@+id/spinner1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@+id/Port" android:layout_toRightOf="@+id/textView2"  android:prompt="@string/time_prompt"></Spinner>
+        <TextView android:id="@+id/textView3" android:layout_width="wrap_content" android:text="Minutes" android:layout_height="wrap_content" android:layout_toRightOf="@+id/spinner1" android:layout_below="@+id/Port"></TextView>
+        <Button android:layout_width="wrap_content" android:id="@+id/Save1" android:layout_height="wrap_content" android:text="Save" android:layout_alignParentBottom="true"></Button>
+    </RelativeLayout>

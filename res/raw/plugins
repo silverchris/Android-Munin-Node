@@ -1,0 +1,2 @@
+com.monitoring.munin_node.plugins.Memory
+com.monitoring.munin_node.plugins.CPU

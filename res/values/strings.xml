@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, munin_node!</string>
+    <string name="app_name">munin_node</string>
+    <string name="hostname">Devices Host Name</string>
+    <string-array name="time_array">
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+    </string-array>
+    <string name="time_prompt">In Minutes</string>
+        <drawable name="white">#ffffff</drawable>
+    <drawable name="blue">#2554C7</drawable>
+    <drawable name="green">#347C2C</drawable>
+    <drawable name="orange">#ff9900</drawable>
+    <drawable name="pink">#FF00FF</drawable>
+    <drawable name="violet">#a020f0</drawable>
+    <drawable name="gray">#778899</drawable>
+    <drawable name="red">#C11B17</drawable>
+</resources>
