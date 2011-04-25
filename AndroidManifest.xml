@@ -15,6 +15,6 @@
         </activity>
         <activity android:name=".Main_View"></activity>
         <activity android:name=".Plugins_View"></activity>
-
+        <activity android:name=".Debug_View"></activity>
     </application>
 </manifest>

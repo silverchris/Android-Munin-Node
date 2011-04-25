@@ -29,6 +29,10 @@ public class munin_node extends TabActivity {
         intent = new Intent().setClass(this, Plugins_View.class);
         spec = tabHost.newTabSpec("plugins").setIndicator("Plugins",res.getDrawable(R.drawable.ic_tab_plugins_view)).setContent(intent);
         tabHost.addTab(spec);
+        
+        intent = new Intent().setClass(this, Debug_View.class);
+        spec = tabHost.newTabSpec("debug").setIndicator("Debug",res.getDrawable(R.drawable.ic_tab_debug_view)).setContent(intent);
+        tabHost.addTab(spec);
 
         tabHost.setCurrentTab(0);
     }
