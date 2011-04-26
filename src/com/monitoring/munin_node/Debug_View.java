@@ -31,10 +31,14 @@ public class Debug_View extends Activity{
         List<Plugin_API> plugins = loadplugins.plugins();
         StringBuffer config = new StringBuffer();
         StringBuffer update = new StringBuffer();
+        toXML xmlgen = new toXML();
         for (Plugin_API p : plugins){
+        	xmlgen.addPlugin(p.getName(), p.getConfig(), p.getUpdate());
         	config.append(p.getConfig());
         	update.append(p.getUpdate());
         }
+        Upload uploader = new Upload("http://munin.radiochat.ca/_android/index.py","asd",xmlgen.toString());
+        uploader.upload();
         TextView configView = (TextView) findViewById(R.id.ConfigView);
         TextView updateView = (TextView) findViewById(R.id.UpdateView);
         configView.setText(config.toString());
