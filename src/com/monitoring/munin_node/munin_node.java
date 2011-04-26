@@ -35,5 +35,7 @@ public class munin_node extends TabActivity {
         tabHost.addTab(spec);
 
         tabHost.setCurrentTab(0);
+        Intent serviceintent=new Intent(this, munin_service.class);  
+        this.startService(serviceintent) ;
     }
 }

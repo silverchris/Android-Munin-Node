@@ -15,13 +15,13 @@ public class Main_View extends Activity{
 	public String Update_Interval = null;
 	public String Update_Interval_New = null;
 	public String Server = null;
-	public Long Port = null;
+	public String Passcode = null;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         Server = settings.getString("Server", "Server");
         Update_Interval = settings.getString("Update_Interval", "10");
-        Port = settings.getLong("Port", 8080);
+        Passcode = settings.getString("Passcode", "Passcode");
         setContentView(R.layout.main_view);
         Spinner spinner = (Spinner) findViewById(R.id.spinner1);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.time_array, android.R.layout.simple_spinner_item);
@@ -29,12 +29,12 @@ public class Main_View extends Activity{
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new MyOnItemSelectedListener());
         final EditText server_text = (EditText) findViewById(R.id.Server);
-        final EditText port_text = (EditText) findViewById(R.id.Port);
+        final EditText passcode_text = (EditText) findViewById(R.id.Passcode);
         final Button save = (Button) findViewById(R.id.Save1);
         server_text.setText(Server);
-        port_text.setText(Port.toString());
+        passcode_text.setText(Passcode);
         System.out.println(Server);
-        System.out.println(Port.toString());
+        System.out.println(Passcode);
         System.out.println(Update_Interval);
         if (Update_Interval.contentEquals("5")){
         	spinner.setSelection(0, true);
@@ -52,7 +52,7 @@ public class Main_View extends Activity{
         save.setOnClickListener(new View.OnClickListener() {  
             public void onClick(View v) {  
                 Server = server_text.getText().toString();
-                Port = Long.parseLong(port_text.getText().toString());
+                Passcode = passcode_text.getText().toString();
                 
                 save_settings();
         }  
@@ -74,10 +74,10 @@ public class Main_View extends Activity{
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("Server", Server);
         editor.putString("Update_Interval", Update_Interval_New);
-        editor.putLong("Port", Port);
+        editor.putString("Passcode", Passcode);
         editor.commit();
         System.out.println(Server);
-        System.out.println(Port.toString());
+        System.out.println(Passcode);
         System.out.println(Update_Interval);
     }
 }
