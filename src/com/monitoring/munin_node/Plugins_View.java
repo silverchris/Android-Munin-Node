@@ -119,12 +119,12 @@ public class Plugins_View extends ExpandableListActivity {
             AbsListView.LayoutParams lp = new AbsListView.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, 64);
 
-            TextView textView = new CheckBox(Plugins_View.this);
-            textView.setLayoutParams(lp);
+            CheckBox checkBox = new CheckBox(Plugins_View.this);
+            checkBox.setLayoutParams(lp);
             // Center the text vertically
-            textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
+            checkBox.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
             // Set the text starting position
-            textView.setOnClickListener(new OnClickListener(){
+            checkBox.setOnClickListener(new OnClickListener(){
             	public void onClick(View v){
                     if (((CheckBox) v).isChecked()) {
                     	SharedPreferences settings = getSharedPreferences("Munin_Node", 0);
@@ -139,9 +139,11 @@ public class Plugins_View extends ExpandableListActivity {
                     }
             	}
             });
-            textView.setPadding(36, 0, 0, 0);
-            textView.setText(getChild(groupPosition, childPosition).toString());
-            return textView;
+            checkBox.setPadding(36, 0, 0, 0);
+            checkBox.setText(getChild(groupPosition, childPosition).toString());
+        	SharedPreferences settings = getSharedPreferences("Munin_Node", 0);
+        	checkBox.setChecked(settings.getBoolean(getChild(groupPosition, childPosition).toString(), true));
+            return checkBox;
         }
 
         public Object getGroup(int groupPosition) {
