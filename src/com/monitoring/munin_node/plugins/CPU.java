@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.regex.*;
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
-
+//TODO cleanup new lines so that there are no extras throught the output. 
 public class CPU implements Plugin_API{
 	public String getName(){
 		return "CPU";

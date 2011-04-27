@@ -1,12 +1,16 @@
 package com.monitoring.munin_node;
 
+import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.TabHost;
-import android.app.TabActivity;
 
 public class munin_node extends TabActivity {
+	Intent service = null;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,7 +39,25 @@ public class munin_node extends TabActivity {
         tabHost.addTab(spec);
 
         tabHost.setCurrentTab(0);
-        Intent serviceintent=new Intent(this, munin_service.class);  
-        this.startService(serviceintent) ;
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.layout.option_menu, menu);
+        return true;
+    }
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	switch (item.getItemId()) {
+    	case R.id.start:
+    		service =new Intent(this, munin_service.class);  
+            this.startService(service) ;
+            return true;
+    	case R.id.stop:
+    		service = new Intent(this, munin_service.class);  
+            this.stopService(service) ;
+            return true;        
+    	}
+    	return false;
+    }
+
 }

@@ -8,7 +8,7 @@ import java.util.regex.*;
 
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
-
+//TODO cleanup new lines so that there are no extras throught the output. 
 public class Memory implements Plugin_API{
 	public String getName(){
 		return "Memory";
@@ -143,33 +143,33 @@ public class Memory implements Plugin_API{
 		output.append("free.value "+meminfo.get("MemFree")+"\n");
 		output.append("buffers.value "+meminfo.get("Buffers")+"\n");
 		output.append("cached.value "+meminfo.get("Cached")+"\n");
-		output.append("swap.value "+((Long.parseLong(meminfo.get("SwapTotal")))-(Long.parseLong(meminfo.get("SwapFree"))))+"\n");
+		output.append("swap.value "+((Long.parseLong(meminfo.get("SwapTotal")))-(Long.parseLong(meminfo.get("SwapFree")))));
 		if (meminfo.containsKey("Committed_AS")) {
-			output.append("committed.value "+meminfo.get("Committed_AS")+"\n");
+			output.append("\ncommitted.value "+meminfo.get("Committed_AS"));
 		}
 		if (meminfo.containsKey("Mapped")) {
-			output.append("mapped.value "+meminfo.get("Mapped")+"\n");
+			output.append("\nmapped.value "+meminfo.get("Mapped"));
 		}
 		if (meminfo.containsKey("Active")) {
-			output.append("active.value "+meminfo.get("Active")+"\n");
+			output.append("\nactive.value "+meminfo.get("Active"));
 		}
 		if (meminfo.containsKey("ActiveAnon")) {
-			output.append("active_anon.value "+meminfo.get("ActiveAnon")+"\n");
+			output.append("\nactive_anon.value "+meminfo.get("ActiveAnon"));
 		}
 		if (meminfo.containsKey("ActiveCache")) {
-			output.append("active_cache.value "+meminfo.get("ActiveCache")+"\n");
+			output.append("\nactive_cache.value "+meminfo.get("ActiveCache"));
 		}
 		if (meminfo.containsKey("Inactive")) {
-			output.append("inactive.value "+meminfo.get("Inactive")+"\n");
+			output.append("\ninactive.value "+meminfo.get("Inactive"));
 		}
 		if (meminfo.containsKey("Inact_dirty")) {
-			output.append("inact_dirty.value "+meminfo.get("Inact_dirty")+"\n");
+			output.append("\ninact_dirty.value "+meminfo.get("Inact_dirty"));
 		}
 		if (meminfo.containsKey("Inact_laundry")) {
-			output.append("inact_laundry.value "+meminfo.get("Inact_laundry")+"\n");
+			output.append("\ninact_laundry.value "+meminfo.get("Inact_laundry"));
 		}
 		if (meminfo.containsKey("Inact_clean")) {
-			output.append("inact_clean.value "+meminfo.get("Inact_clean")+"\n");
+			output.append("\ninact_clean.value "+meminfo.get("Inact_clean"));
 		}
 		return output.toString();
 

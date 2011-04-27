@@ -15,13 +15,16 @@ public class Update {
 		context = _context;
 	}
 	public void doUpdate(){
+        SharedPreferences settings = context.getSharedPreferences("Munin_Node", 0);
         LoadPlugins loadplugins = new LoadPlugins(context);
         List<Plugin_API> plugins = loadplugins.plugins();
         toXML xmlgen = new toXML();
         for (Plugin_API p : plugins){
-        	xmlgen.addPlugin(p.getName(), p.getConfig(), p.getUpdate());
+        	Boolean enabled = settings.getBoolean(p.getName(), true);
+        	if (enabled){
+        		xmlgen.addPlugin(p.getName(), p.getConfig(), p.getUpdate());
+        	}
         }
-        SharedPreferences settings = context.getSharedPreferences("Munin_Node", 0);
         String Server = settings.getString("Server", "Server");
         String Passcode = settings.getString("Passcode", "Passcode");
         Upload uploader = new Upload(Server,Passcode,xmlgen.toString());

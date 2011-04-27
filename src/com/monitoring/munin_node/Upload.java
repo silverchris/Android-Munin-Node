@@ -54,9 +54,9 @@ public class Upload {
 		try {
 			response = client.execute(post);
 		} catch (ClientProtocolException e) {
-			// so much shit do do, so little time
+			return false;
 		} catch (IOException e) {
-			//again shit should be done here
+			return false;
 		}
 		if (response.getStatusLine().getStatusCode() == 300){
 			return true;
