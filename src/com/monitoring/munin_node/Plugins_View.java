@@ -104,7 +104,7 @@ public class Plugins_View extends ExpandableListActivity {
         public TextView getGenericView() {
             // Layout parameters for the ExpandableListView
             AbsListView.LayoutParams lp = new AbsListView.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, 64);
+                    ViewGroup.LayoutParams.FILL_PARENT, 64);
 
             TextView textView = new TextView(Plugins_View.this);
             textView.setLayoutParams(lp);
@@ -117,7 +117,7 @@ public class Plugins_View extends ExpandableListActivity {
 
         public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
             AbsListView.LayoutParams lp = new AbsListView.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, 64);
+                    ViewGroup.LayoutParams.FILL_PARENT, 64);
 
             CheckBox checkBox = new CheckBox(Plugins_View.this);
             checkBox.setLayoutParams(lp);
