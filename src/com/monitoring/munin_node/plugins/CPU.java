@@ -3,6 +3,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.regex.*;
+
+import android.content.Context;
+
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
 //TODO cleanup new lines so that there are no extras throught the output. 
@@ -145,6 +148,16 @@ public class CPU implements Plugin_API{
 			output.append("\nsteal.value "+items[8]);
 		}
 		return output.toString();
+	}
+	@Override
+	public Boolean needsContext() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public Void setContext(Context context) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

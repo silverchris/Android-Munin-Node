@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
+import android.content.Context;
+
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
 public class load implements Plugin_API {
@@ -49,6 +51,18 @@ public class load implements Plugin_API {
 		Pattern split_regex = Pattern.compile("\\s+");
 		String[] items = split_regex.split(loadbuffer.toString());
 		return "load.value "+items[1];
+	}
+
+	@Override
+	public Boolean needsContext() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Void setContext(Context context) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

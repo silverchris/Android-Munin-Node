@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import android.content.Context;
+
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
 public class entropy implements Plugin_API {
@@ -47,6 +49,18 @@ public class entropy implements Plugin_API {
 		} catch (IOException e) {
 			return "";
 		}
+	}
+
+	@Override
+	public Boolean needsContext() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Void setContext(Context context) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

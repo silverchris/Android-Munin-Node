@@ -1,11 +1,8 @@
 package com.monitoring.munin_node;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -20,7 +17,7 @@ public class Debug_View extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.debug_view);
         LoadPlugins loadplugins = new LoadPlugins(this);
-        List<Plugin_API> plugins = loadplugins.plugins();
+        loadplugins.plugins();
         update_view();
         final Button Update = (Button) findViewById(R.id.Update);
         Update.setOnClickListener(new View.OnClickListener() {  
@@ -49,6 +46,9 @@ public class Debug_View extends Activity{
         String Server = settings.getString("Server", "Server");
         String Passcode = settings.getString("Passcode", "Passcode");*/
         for (Plugin_API p : plugins){
+        	if(p.needsContext()){
+    			p.setContext(this);
+    		}
         	//xmlgen.addPlugin(p.getName(), p.getConfig(), p.getUpdate());
         	config.append(p.getConfig());
         	update.append(p.getUpdate());

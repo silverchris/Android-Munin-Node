@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.content.Context;
+
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
 public class fw_packets implements Plugin_API {
@@ -58,6 +60,18 @@ public class fw_packets implements Plugin_API {
 			return "";
 		}
 		return "";
+	}
+
+	@Override
+	public Boolean needsContext() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Void setContext(Context context) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

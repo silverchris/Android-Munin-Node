@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.content.Context;
+
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
 public class interrupts implements Plugin_API {
@@ -60,6 +62,18 @@ public class interrupts implements Plugin_API {
 		String intr = intr_matcher.group(1);
 		String ctxt = intr_matcher.group(2);
 		return "intr.value "+intr+"\nctx.value "+ctxt;
+	}
+
+	@Override
+	public Boolean needsContext() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Void setContext(Context context) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

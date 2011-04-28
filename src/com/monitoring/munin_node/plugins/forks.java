@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.content.Context;
+
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
 public class forks implements Plugin_API {
@@ -53,6 +55,18 @@ public class forks implements Plugin_API {
 		Matcher proccesses_matcher = proccesses_pattern.matcher(statbuffer.toString());
 		proccesses_matcher.find();
 		return "forks.value "+proccesses_matcher.group(1);
+	}
+
+	@Override
+	public Boolean needsContext() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Void setContext(Context context) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

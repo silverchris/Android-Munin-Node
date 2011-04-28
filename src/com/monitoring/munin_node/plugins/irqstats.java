@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.content.Context;
+
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
 public class irqstats implements Plugin_API {
@@ -77,6 +79,18 @@ public class irqstats implements Plugin_API {
 			output.append("\ni"+entry.getKey()+".value "+entry.getValue()[0]);
 		}
 		return output.toString();
+	}
+
+	@Override
+	public Boolean needsContext() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Void setContext(Context context) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

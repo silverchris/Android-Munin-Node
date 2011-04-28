@@ -22,6 +22,9 @@ public class Update {
         for (Plugin_API p : plugins){
         	Boolean enabled = settings.getBoolean(p.getName(), true);
         	if (enabled){
+        		if(p.needsContext()){
+        			p.setContext(context);
+        		}
         		xmlgen.addPlugin(p.getName(), p.getConfig(), p.getUpdate());
         	}
         }

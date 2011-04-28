@@ -2,6 +2,7 @@ package com.monitoring.munin_node;
 
 import android.app.TabActivity;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;

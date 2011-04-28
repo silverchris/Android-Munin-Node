@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.*;
 
+import android.content.Context;
+
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
 //TODO cleanup new lines so that there are no extras throught the output. 
@@ -173,5 +175,15 @@ public class Memory implements Plugin_API{
 		}
 		return output.toString();
 
+	}
+	@Override
+	public Boolean needsContext() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public Void setContext(Context context) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
