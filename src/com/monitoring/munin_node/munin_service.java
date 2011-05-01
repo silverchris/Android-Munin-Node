@@ -25,6 +25,10 @@ public class munin_service extends Service{
 		String ns = Context.NOTIFICATION_SERVICE;
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
 		mNotificationManager.cancel(MUNIN_NOTIFICATION);
+        SharedPreferences settings = getSharedPreferences("Munin_Node", 0);
+        SharedPreferences.Editor editor = settings.edit();
+		editor.putBoolean("Service_Running", false);
+		editor.commit();
     }
     
 	@Override
@@ -43,7 +47,7 @@ public class munin_service extends Service{
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
 		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
-
+		notification.flags |= Notification.FLAG_NO_CLEAR;
 		mNotificationManager.notify(MUNIN_NOTIFICATION, notification);
 				
         SharedPreferences settings = getSharedPreferences("Munin_Node", 0);
@@ -56,6 +60,9 @@ public class munin_service extends Service{
 			}
 		};
 		timer.scheduleAtFixedRate(task, 0, 60000*Update_Interval);
+        SharedPreferences.Editor editor = settings.edit();
+		editor.putBoolean("Service_Running", true);
+		editor.commit();
 		return START_STICKY;
 	}
 

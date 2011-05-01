@@ -3,6 +3,7 @@ package com.monitoring.munin_node;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,6 +16,10 @@ public class munin_node extends TabActivity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        SharedPreferences settings = getSharedPreferences("Munin_Node", 0);
+        SharedPreferences.Editor editor = settings.edit();
+		editor.putBoolean("Service_Running", false);
+		editor.commit();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -44,7 +49,28 @@ public class munin_node extends TabActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.layout.option_menu, menu);
+        SharedPreferences settings = getSharedPreferences("Munin_Node", 0);
+        Boolean running = settings.getBoolean("Service_Running", false);
+        if(!running){
+        	inflater.inflate(R.layout.option_menu_start, menu);
+        }
+        else if(running){
+        	inflater.inflate(R.layout.option_menu_stop, menu);
+        }
+        return true;
+    }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+    	menu.clear();
+        MenuInflater inflater = getMenuInflater();
+        SharedPreferences settings = getSharedPreferences("Munin_Node", 0);
+        Boolean running = settings.getBoolean("Service_Running", false);
+        if(!running){
+        	inflater.inflate(R.layout.option_menu_start, menu);
+        }
+        else if(running){
+        	inflater.inflate(R.layout.option_menu_stop, menu);
+        }
         return true;
     }
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -56,7 +82,7 @@ public class munin_node extends TabActivity {
     	case R.id.stop:
     		service = new Intent(this, munin_service.class);  
             this.stopService(service) ;
-            return true;        
+            return true;
     	}
     	return false;
     }
