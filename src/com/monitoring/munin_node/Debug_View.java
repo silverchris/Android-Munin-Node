@@ -25,36 +25,19 @@ public class Debug_View extends Activity{
             	update_view();
             }
         });
-        /*SharedPreferences settings = getSharedPreferences("Munin_Node", 0);
-        int Update_Interval = Integer.parseInt(settings.getString("Update_Interval", "10"));
-		Timer timer = new Timer();
-		final Update update = new Update(this); 
-		TimerTask task = new TimerTask(){
-			public void run(){
-				update.doUpdate();
-			}
-		};
-		timer.scheduleAtFixedRate(task, 0, 60000*Update_Interval);*/
     }
     private void update_view(){
         LoadPlugins loadplugins = new LoadPlugins(this);
         List<Plugin_API> plugins = loadplugins.plugins();
         StringBuffer config = new StringBuffer();
         StringBuffer update = new StringBuffer();
-        /*toXML xmlgen = new toXML();
-        SharedPreferences settings = getSharedPreferences("Munin_Node", 0);
-        String Server = settings.getString("Server", "Server");
-        String Passcode = settings.getString("Passcode", "Passcode");*/
         for (Plugin_API p : plugins){
         	if(p.needsContext()){
     			p.setContext(this);
     		}
-        	//xmlgen.addPlugin(p.getName(), p.getConfig(), p.getUpdate());
         	config.append(p.getConfig());
         	update.append(p.getUpdate());
         }
-        /*Upload uploader = new Upload(Server,Passcode,xmlgen.toString());
-        uploader.upload();*/
 		final Update updater = new Update(this); 
 		updater.doUpdate();
         TextView configView = (TextView) findViewById(R.id.ConfigView);

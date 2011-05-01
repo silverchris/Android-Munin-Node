@@ -1,7 +1,8 @@
-package com.monitoring.munin_node;
+	package com.monitoring.munin_node;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -9,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 public class Main_View extends Activity{
 	public static final String PREFS_NAME = "Munin_Node";
@@ -53,8 +55,23 @@ public class Main_View extends Activity{
             public void onClick(View v) {  
                 Server = server_text.getText().toString();
                 Passcode = passcode_text.getText().toString();
-                
-                save_settings();
+                Test_Settings test = new Test_Settings();
+                Integer test_value = test.Run_Test(Server, Passcode);
+                Toast toast = null;
+                System.out.println(test_value);
+                switch(test_value){
+                case Test_Settings.OK:
+                	save_settings();
+                	toast = Toast.makeText(Main_View.this, "Saved Successfully", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.BOTTOM, -30, 50);
+                case Test_Settings.PASSCODE_WRONG:
+                	toast = Toast.makeText(Main_View.this, "Passcode Wrong", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.BOTTOM, -30, 50);
+                case Test_Settings.FAILURE:
+                	toast = Toast.makeText(Main_View.this, "General Failure, Check URL and try again", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.BOTTOM, -30, 50);
+                }
+                toast.show();
         }  
 });  
     }

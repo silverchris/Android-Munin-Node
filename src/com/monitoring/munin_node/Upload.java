@@ -57,8 +57,10 @@ public class Upload {
 			return false;
 		} catch (IOException e) {
 			return false;
+		} catch(IllegalStateException e){
+			return false;
 		}
-		if (response.getStatusLine().getStatusCode() == 300){
+		if (response.getStatusLine().getStatusCode() == 200){
 			return true;
 		}
 		else{

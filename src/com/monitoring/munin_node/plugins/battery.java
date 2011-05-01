@@ -59,6 +59,7 @@ public class battery implements Plugin_API {
 		Float Battery_scale = new Float(Battery.getIntExtra("scale", 0));
 		Float Battery_value = (Battery_unscaled/Battery_scale)*100;
 		output.append("battery.value "+Battery_value.toString()+"\n");
+		//output.append(Battery_scale.toString()+"\n");
 		if(Battery.getIntExtra("plugged", 0)>0){
 			output.append("charge.value 100\n");
 		}
@@ -66,10 +67,10 @@ public class battery implements Plugin_API {
 			output.append("charge.value 0\n");
 		}
 		output.append("multigraph Battery_Temp\n");
-		Integer temp = Battery.getIntExtra("voltage", 0);
+		Float temp = new Float(Battery.getIntExtra("voltage", 0)/100);
 		output.append("temp.value "+temp.toString()+"\n");
 		output.append("multigraph Battery_Volt\n");
-		Integer volt = Battery.getIntExtra("temperature",0);
+		Float volt = new Float(Battery.getIntExtra("temperature",0)/100);
 		output.append("volt.value "+volt);
 		return output.toString();
 	}
