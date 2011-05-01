@@ -3,27 +3,52 @@ package com.monitoring.munin_node;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.IBinder;
 
-public class munin_service extends IntentService{
-    public munin_service() {
+public class munin_service extends Service{
+	final int MUNIN_NOTIFICATION = 1;
+	Timer timer;
+    /*public munin_service() {
 		super("Munin Node Service");
-		// TODO Auto-generated constructor stub
-	}
+	}*/
 
     @Override
     public void onDestroy() {
-        // Cancel the persistent notification.
+    	timer.cancel();
+		String ns = Context.NOTIFICATION_SERVICE;
+		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+		mNotificationManager.cancel(MUNIN_NOTIFICATION);
     }
     
 	@Override
-	protected void onHandleIntent(Intent intent) {
-		// TODO Auto-generated method stub
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		String ns = Context.NOTIFICATION_SERVICE;
+		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+		int icon = R.drawable.notification;
+		CharSequence tickerText = "Munin Node Started";
+		long when = System.currentTimeMillis();
+
+		Notification notification = new Notification(icon, tickerText, when);
+		Context context = getApplicationContext();
+		CharSequence contentTitle = "Munin Node";
+		CharSequence contentText = "Just letting you know I am running";
+		Intent notificationIntent = new Intent(this, munin_node.class);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+
+		mNotificationManager.notify(MUNIN_NOTIFICATION, notification);
+				
         SharedPreferences settings = getSharedPreferences("Munin_Node", 0);
         int Update_Interval = Integer.parseInt(settings.getString("Update_Interval", "10"));
-		Timer timer = new Timer();
+		timer = new Timer();
 		final Update update = new Update(this); 
 		TimerTask task = new TimerTask(){
 			public void run(){
@@ -31,6 +56,13 @@ public class munin_service extends IntentService{
 			}
 		};
 		timer.scheduleAtFixedRate(task, 0, 60000*Update_Interval);
+		return START_STICKY;
+	}
+
+	@Override
+	public IBinder onBind(Intent intent) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
     

@@ -64,12 +64,15 @@ public class Main_View extends Activity{
                 	save_settings();
                 	toast = Toast.makeText(Main_View.this, "Saved Successfully", Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.BOTTOM, -30, 50);
+                    break;
                 case Test_Settings.PASSCODE_WRONG:
                 	toast = Toast.makeText(Main_View.this, "Passcode Wrong", Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.BOTTOM, -30, 50);
+                    break;
                 case Test_Settings.FAILURE:
                 	toast = Toast.makeText(Main_View.this, "General Failure, Check URL and try again", Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.BOTTOM, -30, 50);
+                    break;
                 }
                 toast.show();
         }  
