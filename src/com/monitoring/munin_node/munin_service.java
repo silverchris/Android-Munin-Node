@@ -22,19 +22,20 @@ public class munin_service extends Service{
     @Override
     public void onDestroy() {
     	timer.cancel();
-		String ns = Context.NOTIFICATION_SERVICE;
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
-		mNotificationManager.cancel(MUNIN_NOTIFICATION);
+		//String ns = Context.NOTIFICATION_SERVICE;
+		//NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+		//mNotificationManager.cancel(MUNIN_NOTIFICATION);
         SharedPreferences settings = getSharedPreferences("Munin_Node", 0);
         SharedPreferences.Editor editor = settings.edit();
 		editor.putBoolean("Service_Running", false);
 		editor.commit();
+		stopForeground(true);
     }
     
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		String ns = Context.NOTIFICATION_SERVICE;
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+		//String ns = Context.NOTIFICATION_SERVICE;
+		//NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
 		int icon = R.drawable.notification;
 		CharSequence tickerText = "Munin Node Started";
 		long when = System.currentTimeMillis();
@@ -48,7 +49,8 @@ public class munin_service extends Service{
 
 		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
 		notification.flags |= Notification.FLAG_NO_CLEAR;
-		mNotificationManager.notify(MUNIN_NOTIFICATION, notification);
+		//mNotificationManager.notify(MUNIN_NOTIFICATION, notification);
+		startForeground(MUNIN_NOTIFICATION, notification);
 				
         SharedPreferences settings = getSharedPreferences("Munin_Node", 0);
         int Update_Interval = Integer.parseInt(settings.getString("Update_Interval", "10"));
