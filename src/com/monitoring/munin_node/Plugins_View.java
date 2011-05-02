@@ -109,7 +109,7 @@ public class Plugins_View extends ExpandableListActivity {
             TextView textView = new TextView(Plugins_View.this);
             textView.setLayoutParams(lp);
             // Center the text vertically
-            textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
+            textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER);
             // Set the text starting position
             textView.setPadding(36, 0, 0, 0);
             return textView;
@@ -122,7 +122,7 @@ public class Plugins_View extends ExpandableListActivity {
             CheckBox checkBox = new CheckBox(Plugins_View.this);
             checkBox.setLayoutParams(lp);
             // Center the text vertically
-            checkBox.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
+            checkBox.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER);
             // Set the text starting position
             checkBox.setOnClickListener(new OnClickListener(){
             	public void onClick(View v){
