@@ -1,8 +1,9 @@
 package com.monitoring.munin_node;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.TabActivity;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import android.widget.TabHost;
 
 public class munin_node extends TabActivity {
 	Intent service = null;
+	PendingIntent pendingIntent = null;
+	AlarmManager alarmManager;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,14 +77,26 @@ public class munin_node extends TabActivity {
         return true;
     }
     public boolean onOptionsItemSelected(MenuItem item) {
+        SharedPreferences settings = getSharedPreferences("Munin_Node", 0);
+        SharedPreferences.Editor editor = settings.edit();
     	switch (item.getItemId()) {
     	case R.id.start:
-    		service =new Intent(this, munin_service.class);  
-            this.startService(service) ;
+            int Update_Interval = Integer.parseInt(settings.getString("Update_Interval", "10"));
+    		service =new Intent(this, munin_receiver.class);
+    		pendingIntent = PendingIntent.getBroadcast(this, 1234567, service, 0);
+    		alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+    		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+1000, 60000*Update_Interval, pendingIntent);
+    		editor.putBoolean("Service_Running", true);
+    		editor.commit();
+            //this.startService(service) ;
             return true;
     	case R.id.stop:
-    		service = new Intent(this, munin_service.class);  
-            this.stopService(service) ;
+    		//service = new Intent(this, munin_receiver.class);  
+    		alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+    		alarmManager.cancel(pendingIntent);
+    		editor.putBoolean("Service_Running", false);
+    		editor.commit();
+            //this.stopService(service) ;
             return true;
     	}
     	return false;
