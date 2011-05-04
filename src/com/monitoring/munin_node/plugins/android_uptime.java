@@ -24,7 +24,7 @@ public class android_uptime implements Plugin_API {
 		output.append("graph_args --base 1000 -l 0\n");
 		output.append("graph_scale no\n");
 		output.append("graph_vlabel time in days\n");
-		output.append("graph_category system\n");
+		output.append("graph_category Android Phone\n");
 		output.append("booted.label booted\n");
 		output.append("booted.draw AREA\n");
 		output.append("awake.label awake\n");
@@ -36,8 +36,6 @@ public class android_uptime implements Plugin_API {
 	public String getUpdate() {
 		Float booted = new Float((new Float(SystemClock.elapsedRealtime())/1000)/86400);
 		Float awake = new Float((new Float(SystemClock.uptimeMillis())/1000)/86400);
-		System.out.println(booted);
-		System.out.println(awake);
 		return "booted.value "+booted.toString()+"\nawake.value "+awake.toString();
 	}
 
