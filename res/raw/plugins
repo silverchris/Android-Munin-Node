@@ -10,3 +10,4 @@ com.monitoring.munin_node.plugins.irqstats
 com.monitoring.munin_node.plugins.fw_packets
 com.monitoring.munin_node.plugins.network_traffic
 com.monitoring.munin_node.plugins.battery
+com.monitoring.munin_node.plugins.android_uptime
