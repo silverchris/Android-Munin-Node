@@ -137,8 +137,8 @@ public class CPU implements Plugin_API{
 		String[] items = split_regex.split(statbuffer.toString());
 		output.append("user.value "+items[1]+"\n");
 		output.append("nice.value "+items[2]+"\n");
-		output.append("system.value "+items[3]+"\n");
-		output.append("idle.value "+items[4]);
+		output.append("system.value "+items[3]);
+		//output.append("idle.value "+items[4]);
 		if(extinfo == true){
 			output.append("\niowait.value "+items[5]+"\n");
 			output.append("irq.value "+items[6]+"\n");
