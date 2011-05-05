@@ -38,7 +38,7 @@ public class Plugins_View extends ExpandableListActivity {
 
         // Set up our adapter
         LoadPlugins loadplugins = new LoadPlugins(this);
-        loadplugins.plugins();
+        //loadplugins.plugins();
         loadplugins.genCats();
         mAdapter = new MyExpandableListAdapter(loadplugins.getCats(),loadplugins.getchildCats());
         setListAdapter(mAdapter);

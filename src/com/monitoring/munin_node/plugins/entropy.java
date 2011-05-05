@@ -6,6 +6,9 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
@@ -22,7 +25,19 @@ public class entropy implements Plugin_API {
 	}
 
 	@Override
-	public String getConfig() {
+	public Boolean needsContext() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Void setContext(Context context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Void run(Handler handler) {
 		StringBuffer output = new StringBuffer();
 		output.append("graph_title Available entropy\n");
 		output.append("graph_args --base 1000 -l 0\n");
@@ -32,34 +47,25 @@ public class entropy implements Plugin_API {
 		output.append("graph_info This graph shows the amount of entropy available in the system.\n");
 		output.append("entropy.label entropy\n");
 		output.append("entropy.info The number of random bytes available. This is typically used by cryptographic applications.");
-		return output.toString();
-	}
-
-	@Override
-	public String getUpdate() {
 		BufferedReader in = null;
+		String entropy = "";
 		try {
 			in = new BufferedReader(new FileReader("/proc/sys/kernel/random/entropy_avail"));
 		} catch (FileNotFoundException e) {
-			return "";
+			entropy = "U";
 		}
+		
 		try {
-			String entropy = in.readLine();
-			return "entropy.value "+entropy;
+			entropy = in.readLine();
 		} catch (IOException e) {
-			return "";
+			entropy = "U";
 		}
-	}
-
-	@Override
-	public Boolean needsContext() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Void setContext(Context context) {
-		// TODO Auto-generated method stub
+		Bundle bundle = new Bundle();
+		bundle.putString("name", this.getName());
+		bundle.putString("config", output.toString());
+		bundle.putString("update", "entropy.value "+entropy);
+		Message msg = Message.obtain(handler, 42, bundle);
+		handler.sendMessage(msg);
 		return null;
 	}
 

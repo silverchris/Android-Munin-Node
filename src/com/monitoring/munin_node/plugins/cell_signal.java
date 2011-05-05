@@ -2,7 +2,9 @@ package com.monitoring.munin_node.plugins;
 
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.os.SystemClock;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
@@ -23,7 +25,7 @@ public class cell_signal implements Plugin_API {
 		return "Android Phone";
 	}
 
-	@Override
+	/*@Override
 	public String getConfig() {
 		
 		return "";
@@ -31,6 +33,22 @@ public class cell_signal implements Plugin_API {
 
 	@Override
 	public String getUpdate() {
+		
+		return "";
+	}*/
+
+	@Override
+	public Boolean needsContext() {
+		return true;	}
+
+	@Override
+	public Void setContext(Context newcontext) {
+		context = new ContextWrapper(newcontext);
+		return null;
+	}
+
+	@Override
+	public Void run(final Handler handler) {
 		TelephonyManager TelManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 		PhoneStateListener mSignalListener = new PhoneStateListener(){ 
 
@@ -50,23 +68,24 @@ public class cell_signal implements Plugin_API {
 			        	ASU = Math.round((strength + 113f) / 2f); 
 			        } 
 			      } 
-			      super.onSignalStrengthsChanged(signalStrength); 
+			      super.onSignalStrengthsChanged(signalStrength);
+			      StringBuffer output = new StringBuffer();
+			      output.append("graph_title Signal Stregth \n");
+			      output.append("graph_args --upper-limit 31 -l 0\n");
+			      output.append("graph_scale no\n");
+			      output.append("graph_vlabel ASU\n");
+			      output.append("graph_category Android Phone\n");
+			      output.append("graph_info This graph shows Cellular Signal in ASU\n");
+			      output.append("signal.label Signal\n");
+			      Bundle bundle = new Bundle();
+			      bundle.putString("name", "Cell Signal");
+			      bundle.putString("config", output.toString());
+			      bundle.putString("update", "signal.value "+ASU);
+			      Message msg = Message.obtain(handler, 42, bundle);
+			      handler.sendMessage(msg);
 			    }
 			  }; 
 			  TelManager.listen(mSignalListener,PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
-			  SystemClock.sleep(10000);
-			  //TelManager.listen(mSignalListener,PhoneStateListener.LISTEN_NONE ); 
-			  System.out.println(ASU);
-		return "";
-	}
-
-	@Override
-	public Boolean needsContext() {
-		return true;	}
-
-	@Override
-	public Void setContext(Context newcontext) {
-		context = new ContextWrapper(newcontext);
 		return null;
 	}
 

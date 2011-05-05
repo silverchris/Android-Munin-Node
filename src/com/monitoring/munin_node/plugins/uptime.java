@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.regex.*;
 
 import android.content.Context;
+import android.os.Handler;
 
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
@@ -16,7 +17,7 @@ public class uptime implements Plugin_API{
 	public String getCat(){
 		return "System";
 	}
-	public String getConfig(){
+	/*public String getConfig(){
 		StringBuffer output = new StringBuffer();
 		output.append("graph_title Uptime\n");
 		output.append("graph_args --base 1000 -l 0\n");
@@ -43,7 +44,7 @@ public class uptime implements Plugin_API{
 		String[] items = split_regex.split(statbuffer.toString());
 		Float uptime = Float.parseFloat(items[0])/86400;
 		return "uptime.value "+uptime.toString();
-	}
+	}*/
 	@Override
 	public Boolean needsContext() {
 		// TODO Auto-generated method stub
@@ -51,6 +52,11 @@ public class uptime implements Plugin_API{
 	}
 	@Override
 	public Void setContext(Context context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Void run(Handler handler) {
 		// TODO Auto-generated method stub
 		return null;
 	}

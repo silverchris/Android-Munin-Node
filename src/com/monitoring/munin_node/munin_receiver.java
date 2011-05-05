@@ -11,8 +11,6 @@ public class munin_receiver extends BroadcastReceiver {
 		System.out.println("lol alarm");
 		Intent service =new Intent(context, munin_service.class);  
         context.startService(service) ;
-		//Update update = new Update(context);
-		//update.doUpdate();
 	}
 
 }

@@ -2,9 +2,13 @@ package com.monitoring.munin_node.plugins;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
@@ -16,7 +20,18 @@ public class CPU implements Plugin_API{
 	public String getCat(){
 		return "System";
 	}
-	public String getConfig(){
+	@Override
+	public Boolean needsContext() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public Void setContext(Context context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Void run(Handler handler) {
 		StringBuffer statbuffer = new StringBuffer();
 
 		try {
@@ -106,57 +121,27 @@ public class CPU implements Plugin_API{
 			output.append("steal.type DERIVE\n");
 			output.append("steal.info The time that a virtual CPU had runnable tasks, but the virtual CPU itself was not running");
 		}
-		return output.toString();
-	}
-	public String getUpdate(){
-		StringBuffer statbuffer = new StringBuffer();
-
-		try {
-			BufferedReader in = new BufferedReader(new FileReader("/proc/stat"));
-			String str;
-			while ((str = in.readLine()) != null) {
-				statbuffer.append(str);						
-			}
-			in.close();
-		}
-		catch (IOException e) {}
-		Pattern extinfo_regex = Pattern.compile("^cpu +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+");
-		Matcher match1 = extinfo_regex.matcher(statbuffer.toString());
-		boolean extinfo = false;
-		while (match1.find()) {
-			extinfo = true;
-		}
-		Pattern extextinfo_regex = Pattern.compile("^cpu +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+");
-		Matcher match2 = extextinfo_regex.matcher(statbuffer.toString());
-		boolean extextinfo = false;
-		while (match2.find()) {
-			extextinfo = true;
-		}
-		StringBuffer output = new StringBuffer();
+		StringBuffer output2 = new StringBuffer();
 		Pattern split_regex = Pattern.compile("\\s+");
 		String[] items = split_regex.split(statbuffer.toString());
-		output.append("user.value "+items[1]+"\n");
-		output.append("nice.value "+items[2]+"\n");
-		output.append("system.value "+items[3]);
+		output2.append("user.value "+items[1]+"\n");
+		output2.append("nice.value "+items[2]+"\n");
+		output2.append("system.value "+items[3]);
 		//output.append("idle.value "+items[4]);
 		if(extinfo == true){
-			output.append("\niowait.value "+items[5]+"\n");
-			output.append("irq.value "+items[6]+"\n");
-			output.append("softirq.value "+items[7]);
+			output2.append("\niowait.value "+items[5]+"\n");
+			output2.append("irq.value "+items[6]+"\n");
+			output2.append("softirq.value "+items[7]);
 		}
 		if(extextinfo == true){
-			output.append("\nsteal.value "+items[8]);
+			output2.append("\nsteal.value "+items[8]);
 		}
-		return output.toString();
-	}
-	@Override
-	public Boolean needsContext() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	public Void setContext(Context context) {
-		// TODO Auto-generated method stub
+		Bundle bundle = new Bundle();
+		bundle.putString("name", this.getName());
+		bundle.putString("config", output.toString());
+		bundle.putString("update", output2.toString());
+		Message msg = Message.obtain(handler, 42, bundle);
+		handler.sendMessage(msg);
 		return null;
 	}
 	

@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.content.Context;
+import android.os.Handler;
 
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
@@ -23,7 +24,7 @@ public class network_traffic implements Plugin_API {
 		return "Network";
 	}
 
-	@Override
+	/*@Override
 	public String getConfig() {
 		StringBuffer output = new StringBuffer();
 		StringBuffer output2 = new StringBuffer();
@@ -100,7 +101,7 @@ public class network_traffic implements Plugin_API {
 			return "";
 		}
 		return output.toString()+output2.toString();
-	}
+	}*/
 
 	@Override
 	public Boolean needsContext() {
@@ -110,6 +111,12 @@ public class network_traffic implements Plugin_API {
 
 	@Override
 	public Void setContext(Context context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Void run(Handler handler) {
 		// TODO Auto-generated method stub
 		return null;
 	}

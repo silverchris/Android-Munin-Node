@@ -7,6 +7,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
@@ -22,8 +25,26 @@ public class forks implements Plugin_API {
 		return "Processes";
 	}
 
+	/*
 	@Override
-	public String getConfig() {
+	public String getUpdate() {
+		
+	}*/
+
+	@Override
+	public Boolean needsContext() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Void setContext(Context context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Void run(Handler handler) {
 		StringBuffer output = new StringBuffer();
 		output.append("graph_title Fork rate\n");
 		output.append("graph_args --base 1000 -l 0 \n");
@@ -35,11 +56,6 @@ public class forks implements Plugin_API {
 		output.append("forks.min 0\n");
 		output.append("forks.max 100000\n");
 		output.append("forks.info The number of forks per second.");
-		return output.toString();
-	}
-
-	@Override
-	public String getUpdate() {
 		StringBuffer statbuffer = new StringBuffer();
 
 		try {
@@ -54,18 +70,12 @@ public class forks implements Plugin_API {
 		Pattern proccesses_pattern = Pattern.compile("processes[\\s]+([\\d]+).*", Pattern.DOTALL);
 		Matcher proccesses_matcher = proccesses_pattern.matcher(statbuffer.toString());
 		proccesses_matcher.find();
-		return "forks.value "+proccesses_matcher.group(1);
-	}
-
-	@Override
-	public Boolean needsContext() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Void setContext(Context context) {
-		// TODO Auto-generated method stub
+		Bundle bundle = new Bundle();
+		bundle.putString("name", this.getName());
+		bundle.putString("config", output.toString());
+		bundle.putString("update", "forks.value "+proccesses_matcher.group(1));
+		Message msg = Message.obtain(handler, 42, bundle);
+		handler.sendMessage(msg);
 		return null;
 	}
 

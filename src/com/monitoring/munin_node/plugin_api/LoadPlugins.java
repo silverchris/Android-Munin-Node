@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -19,8 +18,16 @@ public class LoadPlugins {
     String[][] childcatarray = {{}};
 	public LoadPlugins(Context context){
 		getPluginList(context);
+		for(final String s : plugin_names){
+			plugins.add((Plugin_API)PluginFactory.getPlugin(s));
+		}
 	}
-	private void getPluginList(Context context){
+	public LoadPlugins(){
+		for(final String s : plugin_names){
+			plugins.add((Plugin_API)PluginFactory.getPlugin(s));
+		}
+	}
+	public List<String> getPluginList(Context context){
 		InputStream plugin_stream = context.getResources().openRawResource( context.getResources().getIdentifier("raw/plugins", "id", context.getPackageName()));
         BufferedReader plugin_reader = new BufferedReader(new InputStreamReader(plugin_stream));
         String line;
@@ -32,15 +39,7 @@ public class LoadPlugins {
         catch(IOException e){
         	//afd
         }
-        for (Iterator<String> i = plugin_names.iterator(); i.hasNext();){
-            System.out.println(i.next());
-        }
-	}
-	public List plugins(){
-		for(final String s : plugin_names){
-			plugins.add((Plugin_API)PluginFactory.getPlugin(s));
-		}
-		return plugins;
+        return plugin_names;
 	}
 	public void genCats(){
 		System.out.println("getting cats");

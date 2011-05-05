@@ -7,6 +7,9 @@ import java.util.*;
 import java.util.regex.*;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
@@ -18,7 +21,19 @@ public class Memory implements Plugin_API{
 	public String getCat(){
 		return "System";
 	}
-	public String getConfig(){
+	
+	@Override
+	public Boolean needsContext() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public Void setContext(Context context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Void run(Handler handler) {
 		Map<String, String> meminfo = new HashMap<String, String>();
 		Pattern meminfo_regex = Pattern.compile("([:\\s]+)");
 		try {
@@ -92,47 +107,31 @@ public class Memory implements Plugin_API{
 		if (meminfo.containsKey("Inact_clean")) {
 			output.append("inact_clean.label inactive_clean\ninact_clean.draw LINE1\ninact_clean.info Memory not currently used.\n");
 		}
-		return output.toString();
-	}
-	public String getUpdate(){
-		Map<String, String> meminfo = new HashMap<String, String>();
-		Pattern meminfo_regex = Pattern.compile("([:\\s]+)");
-		try {
-			BufferedReader in = new BufferedReader(new FileReader("/proc/meminfo"));
-			String str;
-			while ((str = in.readLine()) != null) {
-				String[] items = meminfo_regex.split(str);
-				Long data = Long.parseLong(items[1])*1024;
-				meminfo.put(items[0], data.toString());
-			}
-			in.close();
-		}
-		catch (IOException e) {}
-		StringBuffer output = new StringBuffer();
+		StringBuffer output2 = new StringBuffer();
 
 		if (meminfo.containsKey("Slab")){
-			output.append("slab.value "+meminfo.get("Slab")+"\n");
+			output2.append("slab.value "+meminfo.get("Slab")+"\n");
 		}
 		else {
-			output.append("slab.value 0\n");
+			output2.append("slab.value 0\n");
 		}
 		if (meminfo.containsKey("SwapCached")) {
-			output.append("swap_cache.value "+meminfo.get("SwapCached")+"\n");
+			output2.append("swap_cache.value "+meminfo.get("SwapCached")+"\n");
 		}
 		else {
-			output.append("swap_cache.value 0\n");
+			output2.append("swap_cache.value 0\n");
 		}
 		if (meminfo.containsKey("PageTables")) {
-			output.append("page_tables.value "+meminfo.get("PageTables")+"\n");
+			output2.append("page_tables.value "+meminfo.get("PageTables")+"\n");
 		}
 		else {
-			output.append("page_tables.value 0\n");
+			output2.append("page_tables.value 0\n");
 		}
 		if (meminfo.containsKey("VmallocUsed")){
-			output.append("vmalloc_used.value "+meminfo.get("VmallocUsed")+"\n");
+			output2.append("vmalloc_used.value "+meminfo.get("VmallocUsed")+"\n");
 		}
 		else{
-			output.append("vmalloc_used.value 0\n");
+			output2.append("vmalloc_used.value 0\n");
 		}
 		Long appvalue = Long.parseLong(meminfo.get("MemTotal"))
 		-Long.parseLong(meminfo.get("MemFree"))
@@ -141,49 +140,44 @@ public class Memory implements Plugin_API{
 		-Long.parseLong(meminfo.get("Slab"))
 		-Long.parseLong(meminfo.get("PageTables"))
 		-Long.parseLong(meminfo.get("SwapCached"));
-		output.append("apps.value "+appvalue+"\n");
-		output.append("free.value "+meminfo.get("MemFree")+"\n");
-		output.append("buffers.value "+meminfo.get("Buffers")+"\n");
-		output.append("cached.value "+meminfo.get("Cached")+"\n");
-		output.append("swap.value "+((Long.parseLong(meminfo.get("SwapTotal")))-(Long.parseLong(meminfo.get("SwapFree")))));
+		output2.append("apps.value "+appvalue+"\n");
+		output2.append("free.value "+meminfo.get("MemFree")+"\n");
+		output2.append("buffers.value "+meminfo.get("Buffers")+"\n");
+		output2.append("cached.value "+meminfo.get("Cached")+"\n");
+		output2.append("swap.value "+((Long.parseLong(meminfo.get("SwapTotal")))-(Long.parseLong(meminfo.get("SwapFree")))));
 		if (meminfo.containsKey("Committed_AS")) {
-			output.append("\ncommitted.value "+meminfo.get("Committed_AS"));
+			output2.append("\ncommitted.value "+meminfo.get("Committed_AS"));
 		}
 		if (meminfo.containsKey("Mapped")) {
-			output.append("\nmapped.value "+meminfo.get("Mapped"));
+			output2.append("\nmapped.value "+meminfo.get("Mapped"));
 		}
 		if (meminfo.containsKey("Active")) {
-			output.append("\nactive.value "+meminfo.get("Active"));
+			output2.append("\nactive.value "+meminfo.get("Active"));
 		}
 		if (meminfo.containsKey("ActiveAnon")) {
-			output.append("\nactive_anon.value "+meminfo.get("ActiveAnon"));
+			output2.append("\nactive_anon.value "+meminfo.get("ActiveAnon"));
 		}
 		if (meminfo.containsKey("ActiveCache")) {
-			output.append("\nactive_cache.value "+meminfo.get("ActiveCache"));
+			output2.append("\nactive_cache.value "+meminfo.get("ActiveCache"));
 		}
 		if (meminfo.containsKey("Inactive")) {
-			output.append("\ninactive.value "+meminfo.get("Inactive"));
+			output2.append("\ninactive.value "+meminfo.get("Inactive"));
 		}
 		if (meminfo.containsKey("Inact_dirty")) {
-			output.append("\ninact_dirty.value "+meminfo.get("Inact_dirty"));
+			output2.append("\ninact_dirty.value "+meminfo.get("Inact_dirty"));
 		}
 		if (meminfo.containsKey("Inact_laundry")) {
-			output.append("\ninact_laundry.value "+meminfo.get("Inact_laundry"));
+			output2.append("\ninact_laundry.value "+meminfo.get("Inact_laundry"));
 		}
 		if (meminfo.containsKey("Inact_clean")) {
-			output.append("\ninact_clean.value "+meminfo.get("Inact_clean"));
+			output2.append("\ninact_clean.value "+meminfo.get("Inact_clean"));
 		}
-		return output.toString();
-
-	}
-	@Override
-	public Boolean needsContext() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	public Void setContext(Context context) {
-		// TODO Auto-generated method stub
+		Bundle bundle = new Bundle();
+		bundle.putString("name", this.getName());
+		bundle.putString("config", output.toString());
+		bundle.putString("update", output2.toString());
+		Message msg = Message.obtain(handler, 42, bundle);
+		handler.sendMessage(msg);
 		return null;
 	}
 }

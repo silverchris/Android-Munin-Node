@@ -9,6 +9,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
@@ -26,8 +29,19 @@ public class irqstats implements Plugin_API {
 	}
 
 	@Override
-	public String getConfig() {
+	public Boolean needsContext() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
+	@Override
+	public Void setContext(Context context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Void run(Handler handler) {
 		try {
 			BufferedReader in = new BufferedReader(new FileReader("/proc/interrupts"));
 			String str;
@@ -69,27 +83,16 @@ public class irqstats implements Plugin_API {
 			output.append("\ni"+entry.getKey()+".type DERIVE");
 			output.append("\ni"+entry.getKey()+".min 0\n");
 		}
-		return output.toString();
-	}
-
-	@Override
-	public String getUpdate() {
-		StringBuffer output = new StringBuffer();
+		StringBuffer output2 = new StringBuffer();
 		for (Map.Entry<String, String[]> entry : irqinfo.entrySet()) {
-			output.append("\ni"+entry.getKey()+".value "+entry.getValue()[0]);
+			output2.append("\ni"+entry.getKey()+".value "+entry.getValue()[0]);
 		}
-		return output.toString();
-	}
-
-	@Override
-	public Boolean needsContext() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Void setContext(Context context) {
-		// TODO Auto-generated method stub
+		Bundle bundle = new Bundle();
+		bundle.putString("name", this.getName());
+		bundle.putString("config", output.toString());
+		bundle.putString("update", output2.toString());
+		Message msg = Message.obtain(handler, 42, bundle);
+		handler.sendMessage(msg);
 		return null;
 	}
 

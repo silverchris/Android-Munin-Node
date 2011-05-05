@@ -85,7 +85,7 @@ public class Main_View extends Activity{
         	System.out.println(Update_Interval);
         }
 
-        public void onNothingSelected(AdapterView parent) {
+        public void onNothingSelected(AdapterView<?> parent) {
             // Do nothing.
           }
     }

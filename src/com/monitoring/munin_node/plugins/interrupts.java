@@ -7,6 +7,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
@@ -23,7 +26,19 @@ public class interrupts implements Plugin_API {
 	}
 
 	@Override
-	public String getConfig() {
+	public Boolean needsContext() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Void setContext(Context context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Void run(Handler handler) {
 		StringBuffer output = new StringBuffer();
 		output.append("graph_title Interrupts and context switches\n");
 		output.append("graph_args --base 1000 -l 0\n");
@@ -40,11 +55,6 @@ public class interrupts implements Plugin_API {
 		output.append("ctx.max 100000\n");
 		output.append("intr.min 0\n");
 		output.append("ctx.min 0");
-		return output.toString();
-	}
-
-	@Override
-	public String getUpdate() {
 		StringBuffer statbuffer = new StringBuffer();
 
 		try {
@@ -61,18 +71,12 @@ public class interrupts implements Plugin_API {
 		intr_matcher.find();
 		String intr = intr_matcher.group(1);
 		String ctxt = intr_matcher.group(2);
-		return "intr.value "+intr+"\nctx.value "+ctxt;
-	}
-
-	@Override
-	public Boolean needsContext() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Void setContext(Context context) {
-		// TODO Auto-generated method stub
+		Bundle bundle = new Bundle();
+		bundle.putString("name", this.getName());
+		bundle.putString("config", output.toString());
+		bundle.putString("update", "intr.value "+intr+"\nctx.value "+ctxt);
+		Message msg = Message.obtain(handler, 42, bundle);
+		handler.sendMessage(msg);
 		return null;
 	}
 

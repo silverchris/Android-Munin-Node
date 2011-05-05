@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.regex.Pattern;
 
 import android.content.Context;
+import android.os.Handler;
 
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
@@ -22,7 +23,7 @@ public class open_inodes implements Plugin_API {
 		return "System";
 	}
 
-	@Override
+	/*@Override
 	public String getConfig() {
 		StringBuffer output = new StringBuffer();
 		output.append("graph_title Inode table usage\n");
@@ -55,7 +56,7 @@ public class open_inodes implements Plugin_API {
 		} catch (IOException e) {
 			return "";
 		}
-	}
+	}*/
 
 	@Override
 	public Boolean needsContext() {
@@ -65,6 +66,12 @@ public class open_inodes implements Plugin_API {
 
 	@Override
 	public Void setContext(Context context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Void run(Handler handler) {
 		// TODO Auto-generated method stub
 		return null;
 	}

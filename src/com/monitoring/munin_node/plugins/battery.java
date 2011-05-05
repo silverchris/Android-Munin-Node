@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
@@ -25,8 +28,9 @@ public class battery implements Plugin_API {
 		context = new ContextWrapper(newcontext);
 		return null;
 	}
+	
 	@Override
-	public String getConfig() {
+	public Void run(Handler handler) {
 		StringBuffer output = new StringBuffer();
 		output.append("graph_title Battery Charge\n");
 		output.append("graph_args --upper-limit 100 -l 0\n");
@@ -48,31 +52,31 @@ public class battery implements Plugin_API {
 		output.append("graph_category Android Phone\n");
 		output.append("graph_info This graph shows battery Voltage\n");
 		output.append("volt.label Battery Voltage");
-		return output.toString();
-	}
-	    
-	@Override
-	public String getUpdate() {
-		StringBuffer output = new StringBuffer();
+		StringBuffer output2 = new StringBuffer();
 		Intent Battery = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 		Float Battery_unscaled = new Float(Battery.getIntExtra("level", 0));
 		Float Battery_scale = new Float(Battery.getIntExtra("scale", 0));
 		Float Battery_value = (Battery_unscaled/Battery_scale)*100;
-		output.append("battery.value "+Battery_value.toString()+"\n");
+		output2.append("battery.value "+Battery_value.toString()+"\n");
 		//output.append(Battery_scale.toString()+"\n");
 		if(Battery.getIntExtra("plugged", 0)>0){
-			output.append("charge.value 100\n");
+			output2.append("charge.value 100\n");
 		}
 		else{
-			output.append("charge.value 0\n");
+			output2.append("charge.value 0\n");
 		}
-		output.append("multigraph Battery_Temp\n");
+		output2.append("multigraph Battery_Temp\n");
 		Float temp = new Float(Battery.getIntExtra("voltage", 0)/100);
-		output.append("temp.value "+temp.toString()+"\n");
-		output.append("multigraph Battery_Volt\n");
+		output2.append("temp.value "+temp.toString()+"\n");
+		output2.append("multigraph Battery_Volt\n");
 		Float volt = new Float(Battery.getIntExtra("temperature",0)/100);
-		output.append("volt.value "+volt);
-		return output.toString();
+		output2.append("volt.value "+volt);
+		Bundle bundle = new Bundle();
+		bundle.putString("name", this.getName());
+		bundle.putString("config", output.toString());
+		bundle.putString("update", output2.toString());
+		Message msg = Message.obtain(handler, 42, bundle);
+		handler.sendMessage(msg);
+		return null;
 	}
-
 }
