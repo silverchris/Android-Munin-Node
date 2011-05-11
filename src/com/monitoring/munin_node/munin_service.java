@@ -2,8 +2,6 @@ package com.monitoring.munin_node;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -39,10 +37,10 @@ public class munin_service extends Service{
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-		PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "wakelock");
+		final PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Munin Wake Lock");
 		wakeLock.acquire();
 		String ns = Context.NOTIFICATION_SERVICE;
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+		final NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
 		int icon = R.drawable.notification;
 		CharSequence tickerText = "Munin Node Started";
 		long when = System.currentTimeMillis();
@@ -66,17 +64,53 @@ public class munin_service extends Service{
 				return count;
 			}
 		}
+		class upload_thread extends Thread{
+			Handler handler = null;
+        	String Server = null;
+        	String Passcode = null;
+        	String XML = null;
+        	public  upload_thread(Handler newhandler, String server, String passcode, String xml){
+    			handler = newhandler;
+            	Server = server;
+            	Passcode = passcode;
+            	XML = xml;
+        	}
+           	@Override
+        	public void run(){
+				Upload uploader = new Upload(Server,Passcode,XML);
+                uploader.upload();
+        			Bundle bundle = new Bundle();
+        			bundle.putString("name", "");
+        			bundle.putString("config", "");
+        			bundle.putString("update", "");
+        			Message msg = Message.obtain(handler, 43, bundle);
+    				handler.sendMessage(msg);
+        		}
+        	};
+        final SharedPreferences settings = this.getSharedPreferences("Munin_Node", 0);
 		final count finished = new count();
+		final count running = new count();
 		final toXML xmlgen = new toXML();
 		final Handler service_Handler = new Handler(){
 			@Override
 			public void handleMessage(Message msg){
-				System.out.println("Recieved Message");
 				super.handleMessage(msg);
-				Bundle bundle = (Bundle)msg.obj;
-				xmlgen.addPlugin(bundle.getString("name"), bundle.getString("config"), bundle.getString("update"));
-				finished.increment();
-				System.out.println("Count: "+finished.getCount());
+				if(msg.what == 42){
+					Bundle bundle = (Bundle)msg.obj;
+					xmlgen.addPlugin(bundle.getString("name"), bundle.getString("config"), bundle.getString("update"));
+					finished.increment();
+					if(running.getCount() == finished.getCount()){
+						System.out.println("Finishing up");
+						final String Server = settings.getString("Server", "Server");
+						final String Passcode = settings.getString("Passcode", "Passcode");
+						new upload_thread(this,Server,Passcode,xmlgen.toString()).start();
+					}
+				}
+				else if (msg.what == 43){
+					System.out.println("Upload Finished");
+					mNotificationManager.cancel(MUNIN_NOTIFICATION);
+					wakeLock.release();
+				}
 			}
 		};
 		System.out.println();
@@ -112,33 +146,12 @@ public class munin_service extends Service{
         	}
         }
         List<plugin_thread> plugin_threads = new ArrayList<plugin_thread>();
-        Integer threads = 0;
         for(final String p : plugin_list){
         	plugin_thread thread = new plugin_thread(this,p);
         	thread.run();
         	plugin_threads.add(thread);
-        	threads++;
-        	System.out.println("Name: "+p+"Threads: "+threads);
+        	running.increment();
         }
-		System.out.println("Threads: "+threads);
-        final Integer running_threads = threads;
-        final Timer timer = new Timer();
-        final SharedPreferences settings = this.getSharedPreferences("Munin_Node", 0);
-        TimerTask task = new TimerTask(){
-        	public void run(){
-                if (running_threads == finished.getCount()){
-                	this.cancel();
-                	System.out.println("Finishing up");
-                    String Server = settings.getString("Server", "Server");
-                    String Passcode = settings.getString("Passcode", "Passcode");
-                    Upload uploader = new Upload(Server,Passcode,xmlgen.toString());
-                    uploader.upload();
-                }
-        	}
-        };
-        timer.scheduleAtFixedRate(task, 0, 100);
-		mNotificationManager.cancel(MUNIN_NOTIFICATION);
-		wakeLock.release();
 		return START_NOT_STICKY;
 	}
 

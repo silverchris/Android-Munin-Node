@@ -2,6 +2,8 @@
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -52,32 +54,49 @@ public class Main_View extends Activity{
         }
         
         save.setOnClickListener(new View.OnClickListener() {  
-            public void onClick(View v) {  
-                Server = server_text.getText().toString();
-                Passcode = passcode_text.getText().toString();
-                Test_Settings test = new Test_Settings();
-                Integer test_value = test.Run_Test(Server, Passcode);
-                Toast toast = null;
-                System.out.println(test_value);
-                switch(test_value){
-                case Test_Settings.OK:
-                	save_settings();
-                	toast = Toast.makeText(Main_View.this, "Saved Successfully", Toast.LENGTH_LONG);
-                    toast.setGravity(Gravity.BOTTOM, -30, 50);
-                    break;
-                case Test_Settings.PASSCODE_WRONG:
-                	toast = Toast.makeText(Main_View.this, "Passcode Wrong", Toast.LENGTH_LONG);
-                    toast.setGravity(Gravity.BOTTOM, -30, 50);
-                    break;
-                case Test_Settings.FAILURE:
-                	toast = Toast.makeText(Main_View.this, "General Failure, Check URL and try again", Toast.LENGTH_LONG);
-                    toast.setGravity(Gravity.BOTTOM, -30, 50);
-                    break;
-                }
-                toast.show();
-        }  
-});  
+        	final Handler test_handler = new Handler(){
+    			@Override
+    			public void handleMessage(Message msg){
+    				System.out.println("Recieved Message");
+    				super.handleMessage(msg);
+    				Bundle bundle = (Bundle)msg.obj;
+    				Toast toast = Toast.makeText(Main_View.this, bundle.getString("result") , Toast.LENGTH_LONG);
+    				toast.setGravity(Gravity.BOTTOM, -30, 50);
+    				toast.show();
+    			}
+    		};
+        	public void onClick(View v) {  
+        		new Thread(new Runnable(){
+        			public void run(){
+        				Server = server_text.getText().toString();
+        				Passcode = passcode_text.getText().toString();
+        				Test_Settings test = new Test_Settings();
+        				Integer test_value = test.Run_Test(Server, Passcode);
+        				String result = null;
+        				System.out.println(test_value);
+        				switch(test_value){
+        				case Test_Settings.OK:
+        					save_settings();
+        					result = "Saved Successfully";
+        					break;
+        				case Test_Settings.PASSCODE_WRONG:
+        					result = "Passcode Wrong";
+        					break;
+        				case Test_Settings.FAILURE:
+        					result = "General Failure, Check URL and try again";
+        					break;
+        				}
+    					Bundle bundle = new Bundle();
+            			bundle.putString("result", result);
+            			Message msg = Message.obtain(test_handler, 42, bundle);
+    					test_handler.sendMessage(msg);
+        			}
+        		}
+        		).start();
+        		}   
+        	});
     }
+        
     public class MyOnItemSelectedListener implements OnItemSelectedListener {
 
         public void onItemSelected(AdapterView<?> parent,View view, int pos, long id) {
