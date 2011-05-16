@@ -12,3 +12,4 @@ com.monitoring.munin_node.plugins.Memory
 com.monitoring.munin_node.plugins.open_inodes
 com.monitoring.munin_node.plugins.uptime
 com.monitoring.munin_node.plugins.network_traffic
+com.monitoring.munin_node.plugins.munin_time

@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -39,12 +40,16 @@ public class munin_service extends Service{
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		final PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Munin Wake Lock");
 		wakeLock.acquire();
+		long when = System.currentTimeMillis();
+        final SharedPreferences settings = this.getSharedPreferences("Munin_Node", 0);
+        final Editor editor = settings.edit();
+        editor.putLong("new_start_time", when);
+        editor.commit();
 		String ns = Context.NOTIFICATION_SERVICE;
 		final NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
 		int icon = R.drawable.notification;
 		CharSequence tickerText = "Munin Node Started";
-		long when = System.currentTimeMillis();
-
+        
 		Notification notification = new Notification(icon, tickerText, when);
 		Context context = getApplicationContext();
 		CharSequence contentTitle = "Munin Node";
@@ -87,7 +92,6 @@ public class munin_service extends Service{
     				handler.sendMessage(msg);
         		}
         	};
-        final SharedPreferences settings = this.getSharedPreferences("Munin_Node", 0);
 		final count finished = new count();
 		final count running = new count();
 		final toXML xmlgen = new toXML();
@@ -109,6 +113,9 @@ public class munin_service extends Service{
 				else if (msg.what == 43){
 					System.out.println("Upload Finished");
 					mNotificationManager.cancel(MUNIN_NOTIFICATION);
+					long now = System.currentTimeMillis();
+			        editor.putLong("end_time", now);
+			        editor.commit();
 					wakeLock.release();
 				}
 			}
