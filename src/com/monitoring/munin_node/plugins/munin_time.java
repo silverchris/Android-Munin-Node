@@ -45,7 +45,12 @@ public class munin_time implements Plugin_API {
 		Bundle bundle = new Bundle();
 		bundle.putString("name", this.getName());
 		bundle.putString("config", output.toString());
-		bundle.putString("update", "time.value "+processing_time.toString());
+		if(processing_time < 0){
+			bundle.putString("update", "time.value U");
+		}
+		else{
+			bundle.putString("update", "time.value "+processing_time.toString());
+		}
 		Message msg = Message.obtain(handler, 42, bundle);
 		handler.sendMessage(msg);
 		return null;

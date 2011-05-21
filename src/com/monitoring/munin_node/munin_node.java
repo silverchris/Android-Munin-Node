@@ -19,10 +19,15 @@ public class munin_node extends TabActivity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        SharedPreferences settings = getSharedPreferences("Munin_Node", 0);
-        SharedPreferences.Editor editor = settings.edit();
-		editor.putBoolean("Service_Running", false);
-		editor.commit();
+		service = new Intent(this, munin_receiver.class);
+		pendingIntent = PendingIntent.getBroadcast(this, 1234567, service, PendingIntent.FLAG_NO_CREATE);
+		if (pendingIntent == null){
+	        SharedPreferences settings = getSharedPreferences("Munin_Node", 0);
+	        SharedPreferences.Editor editor = settings.edit();
+			editor.putBoolean("Service_Running", false);
+			editor.commit();
+		}
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -78,21 +83,20 @@ public class munin_node extends TabActivity {
     	switch (item.getItemId()) {
     	case R.id.start:
             int Update_Interval = Integer.parseInt(settings.getString("Update_Interval", "10"));
-    		service =new Intent(this, munin_receiver.class);
-    		pendingIntent = PendingIntent.getBroadcast(this, 1234567, service, 0);
+            if (pendingIntent == null){
+            	service =new Intent(this, munin_receiver.class);
+            	pendingIntent = PendingIntent.getBroadcast(this, 1234567, service, 0);
+            }
     		alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
     		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+1000, 60000*Update_Interval, pendingIntent);
     		editor.putBoolean("Service_Running", true);
     		editor.commit();
-            //this.startService(service) ;
             return true;
     	case R.id.stop:
-    		//service = new Intent(this, munin_receiver.class);  
     		alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
     		alarmManager.cancel(pendingIntent);
     		editor.putBoolean("Service_Running", false);
     		editor.commit();
-            //this.stopService(service) ;
             return true;
     	case R.id.force:
         	Intent service =new Intent(this, munin_service.class);  

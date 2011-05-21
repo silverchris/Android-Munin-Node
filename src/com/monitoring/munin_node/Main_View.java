@@ -10,6 +10,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -22,7 +24,7 @@ public class Main_View extends Activity{
 	public String Passcode = null;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        final SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         Server = settings.getString("Server", "Server");
         Update_Interval = settings.getString("Update_Interval", "10");
         Passcode = settings.getString("Passcode", "Passcode");
@@ -95,6 +97,17 @@ public class Main_View extends Activity{
         		).start();
         		}   
         	});
+        CheckBox onboot = (CheckBox) findViewById(R.id.onBoot);
+        onboot.setChecked(settings.getBoolean("onBoot", false));
+        onboot.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		        SharedPreferences.Editor editor = settings.edit();
+		        editor.putBoolean("onBoot", isChecked);
+		        editor.commit();
+			}
+		});
     }
         
     public class MyOnItemSelectedListener implements OnItemSelectedListener {

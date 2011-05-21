@@ -24,9 +24,6 @@ import com.monitoring.munin_node.plugin_api.Plugin_API;
 
 public class munin_service extends Service{
 	final int MUNIN_NOTIFICATION = 1;
-    /*public munin_service() {
-		super("Munin Node Service");
-	}*/
 
     @Override
     public void onDestroy() {

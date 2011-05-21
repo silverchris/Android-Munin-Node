@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <RelativeLayout android:id="@+id/relativeLayout1" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
-        <TextView android:id="@+id/textView1" android:layout_width="wrap_content" android:text="Server:" android:layout_height="wrap_content"></TextView>
-        <EditText android:layout_width="fill_parent" android:id="@+id/Server" android:text="Server" android:layout_height="wrap_content" android:layout_below="@+id/textView1"></EditText>
-        <TextView android:id="@+id/Port_Text" android:layout_width="wrap_content" android:text="Passcode:" android:layout_height="wrap_content" android:layout_below="@+id/Server"></TextView>
-        <EditText android:layout_width="fill_parent" android:id="@+id/Passcode" android:text="Passcode" android:layout_height="wrap_content" android:layout_below="@+id/Port_Text"></EditText>
-        <TextView android:id="@+id/textView2" android:layout_width="wrap_content" android:text="Update Interval:" android:layout_height="wrap_content" android:layout_below="@+id/Passcode"></TextView>
-        <Spinner android:id="@+id/spinner1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@+id/Passcode" android:layout_toRightOf="@+id/textView2"  android:prompt="@string/time_prompt"></Spinner>
-        <TextView android:id="@+id/textView3" android:layout_width="wrap_content" android:text="Minutes" android:layout_height="wrap_content" android:layout_toRightOf="@+id/spinner1" android:layout_below="@+id/Passcode"></TextView>
-        <Button android:layout_width="wrap_content" android:id="@+id/Save1" android:layout_height="wrap_content" android:text="Save" android:layout_alignParentBottom="true"></Button>
-    </RelativeLayout>
+	<ScrollView  android:id="@+id/scrollView1" android:fillViewport="true" android:layout_width="fill_parent" android:layout_height="wrap_content" xmlns:android="http://schemas.android.com/apk/res/android">
+    	<RelativeLayout android:id="@+id/relativeLayout1" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
+	        <TextView android:id="@+id/textView1" android:layout_width="wrap_content" android:text="Server:" android:layout_height="wrap_content"></TextView>
+        	<EditText android:layout_width="fill_parent" android:id="@+id/Server" android:text="Server" android:layout_height="wrap_content" android:layout_below="@+id/textView1"></EditText>
+        	<TextView android:id="@+id/Port_Text" android:layout_width="wrap_content" android:text="Passcode:" android:layout_height="wrap_content" android:layout_below="@+id/Server"></TextView>
+	        <EditText android:layout_width="fill_parent" android:id="@+id/Passcode" android:text="Passcode" android:layout_height="wrap_content" android:layout_below="@+id/Port_Text"></EditText>
+        	<TextView android:id="@+id/textView2" android:layout_width="wrap_content" android:text="Update Interval:" android:layout_height="wrap_content" android:layout_below="@+id/Passcode" android:layout_marginTop="15dp"></TextView>
+        	<Spinner android:id="@+id/spinner1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@+id/Passcode" android:layout_toRightOf="@+id/textView2"  android:prompt="@string/time_prompt"></Spinner>
+    	    <TextView android:id="@+id/textView3" android:layout_width="wrap_content" android:text="Minutes" android:layout_height="wrap_content" android:layout_toRightOf="@+id/spinner1" android:layout_below="@+id/Passcode" android:layout_marginTop="15dp"></TextView>
+        	<TextView android:id="@+id/textView4" android:layout_width="wrap_content" android:text="Start Service On Boot" android:layout_height="wrap_content" android:layout_below="@+id/spinner1" android:layout_marginTop="15dp"></TextView>
+        	<CheckBox android:layout_width="wrap_content" android:text="" android:layout_height="wrap_content" android:id="@+id/onBoot" android:layout_below="@+id/spinner1" android:layout_toRightOf="@+id/textView4"></CheckBox>
+        	<Button android:layout_width="wrap_content" android:id="@+id/Save1" android:layout_height="wrap_content" android:text="Save" android:layout_alignParentBottom="true" android:layout_below="@+id/onBoot"></Button>
+    	</RelativeLayout>
+	</ScrollView>
