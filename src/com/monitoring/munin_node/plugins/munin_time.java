@@ -39,18 +39,45 @@ public class munin_time implements Plugin_API {
 		output.append("graph_info This graph shows how much time is spent running the munin service, its data is delayed by one run.\n");
 		output.append("graph_category munin\n");
 		output.append("graph_scale no\n");
-		output.append("time.label Time\n");
+		output.append("time.label Service\n");
 		output.append("time.draw LINE\n");
 		output.append("time.info Time Spent running the munin service\n");
+		output.append("plugin.label Plugin\n");
+		output.append("plugin.draw LINE\n");
+		output.append("plugin.info Time Spent running the munin plugins\n");
+		output.append("upload.label Upload\n");
+		output.append("upload.draw LINE\n");
+		output.append("upload.info Time Spent uploading munin data\n");
 		Bundle bundle = new Bundle();
 		bundle.putString("name", this.getName());
 		bundle.putString("config", output.toString());
+		StringBuffer update = new StringBuffer();
 		if(processing_time < 0){
-			bundle.putString("update", "time.value U");
+			update.append("time.value U\n");
 		}
 		else{
-			bundle.putString("update", "time.value "+processing_time.toString());
+			update.append("time.value "+processing_time.toString()+"\n");
 		}
+		Long plugin = settings.getLong("new_plugin_end_time", 0)-settings.getLong("plugin_start_time", 0);
+        editor.putLong("plugin_start_time", settings.getLong("new_plugin_start_time", 0));
+        editor.putLong("plugin_end_time", settings.getLong("new_plugin_end_time", 0));
+		if(plugin < 0){
+			update.append("plugin.value U\n");
+		}
+		else{
+			update.append("plugin.value "+plugin.toString()+"\n");
+		}
+		Long upload = settings.getLong("upload_end_time", 0)-settings.getLong("upload_start_time", 0);
+        editor.putLong("upload_start_time", settings.getLong("new_upload_start_time", 0));
+        editor.putLong("upload_end_time", settings.getLong("new_upload_end_time", 0));
+		if(upload < 0){
+			update.append("upload.value U\n");
+		}
+		else{
+			update.append("upload.value "+upload.toString()+"\n");
+		}
+		editor.commit();
+		bundle.putString("update", update.toString());
 		Message msg = Message.obtain(handler, 42, bundle);
 		handler.sendMessage(msg);
 		return null;

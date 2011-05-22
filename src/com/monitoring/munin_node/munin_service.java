@@ -1,7 +1,12 @@
 package com.monitoring.munin_node;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.GZIPOutputStream;
+
+import org.acra.ErrorReporter;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -18,6 +23,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.PowerManager;
 
+import com.monitoring.munin_node.protos.Plugins;
 import com.monitoring.munin_node.plugin_api.LoadPlugins;
 import com.monitoring.munin_node.plugin_api.PluginFactory;
 import com.monitoring.munin_node.plugin_api.Plugin_API;
@@ -42,21 +48,15 @@ public class munin_service extends Service{
         final Editor editor = settings.edit();
         editor.putLong("new_start_time", when);
         editor.commit();
-		String ns = Context.NOTIFICATION_SERVICE;
-		final NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
-		int icon = R.drawable.notification;
-		CharSequence tickerText = "Munin Node Started";
-        
-		Notification notification = new Notification(icon, tickerText, when);
-		Context context = getApplicationContext();
-		CharSequence contentTitle = "Munin Node";
-		CharSequence contentText = "Just letting you know I am running";
-		Intent notificationIntent = new Intent(this, munin_node.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+        final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);        
+		Notification notification = new Notification(R.drawable.notification, "Munin Node Started", when);
+		Context context = getApplicationContext();
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,  new Intent(this, munin_node.class), 0);
+		notification.setLatestEventInfo(context, "Munin Node", "Just letting you know I am running", contentIntent);
 		notification.flags |= Notification.FLAG_NO_CLEAR;
 		mNotificationManager.notify(MUNIN_NOTIFICATION, notification);
+		
 		class count{
 			Integer count = 0;
 			public void increment(){
@@ -70,55 +70,66 @@ public class munin_service extends Service{
 			Handler handler = null;
         	String Server = null;
         	String Passcode = null;
-        	String XML = null;
-        	public  upload_thread(Handler newhandler, String server, String passcode, String xml){
+        	ByteArrayOutputStream OUT = null;
+        	public  upload_thread(Handler newhandler, String server, String passcode, ByteArrayOutputStream out){
     			handler = newhandler;
             	Server = server;
             	Passcode = passcode;
-            	XML = xml;
+            	OUT = out;
         	}
            	@Override
         	public void run(){
-				Upload uploader = new Upload(Server,Passcode,XML);
-                uploader.upload();
-        			Bundle bundle = new Bundle();
-        			bundle.putString("name", "");
-        			bundle.putString("config", "");
-        			bundle.putString("update", "");
-        			Message msg = Message.obtain(handler, 43, bundle);
+           			Upload uploader = new Upload(Server,Passcode,OUT);
+                    uploader.upload();
+        			Message msg = Message.obtain(handler, 43);
     				handler.sendMessage(msg);
         		}
         	};
 		final count finished = new count();
 		final count running = new count();
-		final toXML xmlgen = new toXML();
+		final Plugins.Builder plugins = Plugins.newBuilder();
 		final Handler service_Handler = new Handler(){
 			@Override
 			public void handleMessage(Message msg){
 				super.handleMessage(msg);
 				if(msg.what == 42){
 					Bundle bundle = (Bundle)msg.obj;
-					xmlgen.addPlugin(bundle.getString("name"), bundle.getString("config"), bundle.getString("update"));
+					Plugins.Plugin.Builder plugin = Plugins.Plugin.newBuilder();
+					plugin.setName(bundle.getString("name")).setConfig(bundle.getString("config")).setUpdate(bundle.getString("update"));
+					plugins.addPlugin(plugin);
 					finished.increment();
 					if(running.getCount() == finished.getCount()){
+						ByteArrayOutputStream out = new ByteArrayOutputStream();
+						GZIPOutputStream gzipped = null;
+						try {
+							gzipped = new GZIPOutputStream(out);
+							plugins.build().writeTo(gzipped);
+							gzipped.close();
+						} catch (IOException e) {
+							ErrorReporter.getInstance().handleException(e);
+						}
+			            editor.putLong("new_plugin_end_time", System.currentTimeMillis());
 						System.out.println("Finishing up");
 						final String Server = settings.getString("Server", "Server");
 						final String Passcode = settings.getString("Passcode", "Passcode");
-						new upload_thread(this,Server,Passcode,xmlgen.toString()).start();
+			            editor.putLong("new_upload_start_time", System.currentTimeMillis()).commit();
+						new upload_thread(this,Server,Passcode,out).start();
+						try {
+							out.close();
+						} catch (IOException e) {
+							ErrorReporter.getInstance().handleException(e);
+						}
 					}
 				}
 				else if (msg.what == 43){
+		            editor.putLong("new_upload_end_time", System.currentTimeMillis()).commit();
 					System.out.println("Upload Finished");
-					mNotificationManager.cancel(MUNIN_NOTIFICATION);
-					long now = System.currentTimeMillis();
-			        editor.putLong("end_time", now);
-			        editor.commit();
+					mNotificationManager.cancel(MUNIN_NOTIFICATION);//Cancel Notification that the "service" is running
+			        editor.putLong("end_time", System.currentTimeMillis()).commit();
 					wakeLock.release();
 				}
 			}
 		};
-		System.out.println();
-        //
         LoadPlugins loadplugins = new LoadPlugins();
         List<String> plugin_list = loadplugins.getPluginList(context);
         class plugin_thread extends Thread{
@@ -150,6 +161,8 @@ public class munin_service extends Service{
         	}
         }
         List<plugin_thread> plugin_threads = new ArrayList<plugin_thread>();
+        editor.putLong("new_plugin_start_time", System.currentTimeMillis());
+        editor.commit();
         for(final String p : plugin_list){
         	plugin_thread thread = new plugin_thread(this,p);
         	thread.run();
