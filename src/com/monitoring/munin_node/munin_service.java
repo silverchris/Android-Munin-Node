@@ -2,7 +2,6 @@ package com.monitoring.munin_node;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
@@ -56,14 +55,22 @@ public class munin_service extends Service{
 		notification.setLatestEventInfo(context, "Munin Node", "Just letting you know I am running", contentIntent);
 		notification.flags |= Notification.FLAG_NO_CLEAR;
 		mNotificationManager.notify(MUNIN_NOTIFICATION, notification);
-		
-		class count{
-			Integer count = 0;
-			public void increment(){
-				count++;
+		class Count{
+			int ran = 0;
+			int done = 0;
+			public void ranincrement(){
+				ran++;
 			}
-			public Integer getCount(){
-				return count;
+			public void doneincrement(){
+				done++;
+			}
+			public Boolean Done(){
+				if(done == ran){
+					return true;
+				}
+				else{
+					return false;
+				}
 			}
 		}
 		class upload_thread extends Thread{
@@ -82,11 +89,11 @@ public class munin_service extends Service{
            			Upload uploader = new Upload(Server,Passcode,OUT);
                     uploader.upload();
         			Message msg = Message.obtain(handler, 43);
+        			uploader.close();
     				handler.sendMessage(msg);
         		}
         	};
-		final count finished = new count();
-		final count running = new count();
+		final Count count = new Count();
 		final Plugins.Builder plugins = Plugins.newBuilder();
 		final Handler service_Handler = new Handler(){
 			@Override
@@ -97,8 +104,8 @@ public class munin_service extends Service{
 					Plugins.Plugin.Builder plugin = Plugins.Plugin.newBuilder();
 					plugin.setName(bundle.getString("name")).setConfig(bundle.getString("config")).setUpdate(bundle.getString("update"));
 					plugins.addPlugin(plugin);
-					finished.increment();
-					if(running.getCount() == finished.getCount()){
+					count.doneincrement();
+					if(count.Done()){
 						ByteArrayOutputStream out = new ByteArrayOutputStream();
 						GZIPOutputStream gzipped = null;
 						try {
@@ -158,16 +165,16 @@ public class munin_service extends Service{
         			Message msg = Message.obtain(service_Handler, 42, bundle);
     				service_Handler.sendMessage(msg);
         		}
+        		return;
         	}
         }
-        List<plugin_thread> plugin_threads = new ArrayList<plugin_thread>();
         editor.putLong("new_plugin_start_time", System.currentTimeMillis());
         editor.commit();
         for(final String p : plugin_list){
         	plugin_thread thread = new plugin_thread(this,p);
+        	thread.setDaemon(true);
         	thread.run();
-        	plugin_threads.add(thread);
-        	running.increment();
+        	count.ranincrement();
         }
 		return START_NOT_STICKY;
 	}

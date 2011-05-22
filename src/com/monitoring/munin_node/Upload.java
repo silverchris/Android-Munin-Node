@@ -28,6 +28,11 @@ public class Upload {
 		Passcode = passcode; 
 		OUT = out;
 	}
+	public void close(){
+		Server = null;
+		Passcode = null;
+		OUT = null;
+	}
 	public Boolean upload(){
 		HttpClient client = new DefaultHttpClient();
 		HttpPost post = new HttpPost(Server);
