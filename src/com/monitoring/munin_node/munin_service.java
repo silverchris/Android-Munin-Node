@@ -76,20 +76,18 @@ public class munin_service extends Service{
 		class upload_thread extends Thread{
 			Handler handler = null;
         	String Server = null;
-        	String Passcode = null;
         	ByteArrayOutputStream OUT = null;
         	public  upload_thread(Handler newhandler, String server, String passcode, ByteArrayOutputStream out){
     			handler = newhandler;
             	Server = server;
-            	Passcode = passcode;
             	OUT = out;
         	}
            	@Override
         	public void run(){
-           			Upload uploader = new Upload(Server,Passcode,OUT);
-                    uploader.upload();
+           			UploadURL uploader = new UploadURL(Server,OUT);
+                    uploader.Status();
         			Message msg = Message.obtain(handler, 43);
-        			uploader.close();
+        			//uploader.close();
     				handler.sendMessage(msg);
         		}
         	};
