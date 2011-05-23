@@ -21,13 +21,11 @@ public class Main_View extends Activity{
 	public String Update_Interval = null;
 	public String Update_Interval_New = null;
 	public String Server = null;
-	public String Passcode = null;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         Server = settings.getString("Server", "Server");
         Update_Interval = settings.getString("Update_Interval", "10");
-        Passcode = settings.getString("Passcode", "Passcode");
         setContentView(R.layout.main_view);
         Spinner spinner = (Spinner) findViewById(R.id.spinner1);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.time_array, android.R.layout.simple_spinner_item);
@@ -35,12 +33,9 @@ public class Main_View extends Activity{
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new MyOnItemSelectedListener());
         final EditText server_text = (EditText) findViewById(R.id.Server);
-        final EditText passcode_text = (EditText) findViewById(R.id.Passcode);
         final Button save = (Button) findViewById(R.id.Save1);
         server_text.setText(Server);
-        passcode_text.setText(Passcode);
         System.out.println(Server);
-        System.out.println(Passcode);
         System.out.println(Update_Interval);
         if (Update_Interval.contentEquals("5")){
         	spinner.setSelection(0, true);
@@ -71,18 +66,14 @@ public class Main_View extends Activity{
         		new Thread(new Runnable(){
         			public void run(){
         				Server = server_text.getText().toString();
-        				Passcode = passcode_text.getText().toString();
         				Test_Settings test = new Test_Settings();
-        				Integer test_value = test.Run_Test(Server, Passcode);
+        				Integer test_value = test.Run_Test(Server);
         				String result = null;
         				System.out.println(test_value);
         				switch(test_value){
         				case Test_Settings.OK:
         					save_settings();
         					result = "Saved Successfully";
-        					break;
-        				case Test_Settings.PASSCODE_WRONG:
-        					result = "Passcode Wrong";
         					break;
         				case Test_Settings.FAILURE:
         					result = "General Failure, Check URL and try again";
@@ -126,10 +117,8 @@ public class Main_View extends Activity{
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("Server", Server);
         editor.putString("Update_Interval", Update_Interval_New);
-        editor.putString("Passcode", Passcode);
         editor.commit();
         System.out.println(Server);
-        System.out.println(Passcode);
         System.out.println(Update_Interval);
     }
 }

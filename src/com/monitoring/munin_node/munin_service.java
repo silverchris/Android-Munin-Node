@@ -77,7 +77,7 @@ public class munin_service extends Service{
 			Handler handler = null;
         	String Server = null;
         	ByteArrayOutputStream OUT = null;
-        	public  upload_thread(Handler newhandler, String server, String passcode, ByteArrayOutputStream out){
+        	public  upload_thread(Handler newhandler, String server, ByteArrayOutputStream out){
     			handler = newhandler;
             	Server = server;
             	OUT = out;
@@ -114,9 +114,8 @@ public class munin_service extends Service{
 						}
 			            editor.putLong("new_plugin_end_time", System.currentTimeMillis());
 						final String Server = settings.getString("Server", "Server");
-						final String Passcode = settings.getString("Passcode", "Passcode");
 			            editor.putLong("new_upload_start_time", System.currentTimeMillis()).commit();
-						new upload_thread(this,Server,Passcode,out).start();
+						new upload_thread(this,Server,out).start();
 						try {
 							out.close();
 						} catch (IOException e) {
