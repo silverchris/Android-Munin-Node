@@ -1,0 +1,24 @@
+Python Documentation
+
+These two scripts are what are needed to receive the data and get it into munin
+
+
+android_:
+android_ is the munin plugin. It is a wildcard plugin, and should be symlinked in the munin directory with the device you want to monitor's unique id at the end.
+It should look something like android_bd52a2a1608bb3d3. You also need to the variabled gzipped in the script to point to were your data is stored.
+
+handler.py:
+handler.py is a python script that records the uploaded data into a file for the android_ munin plugin to read.
+The storedir variable in it needs to be edited to point to where you want the data stored.
+You also need to add directive to your apache configuration or .htaccess file for the script.
+An example is as follows
+<Directory "/path/to/where/the/script/resides">
+                Options +ExecCGI
+                AllowOverride all
+                Order allow,deny
+                allow from all
+                SetHandler mod_python
+                PythonHandler handler
+</Directory>
+
+The script needs its own directory to run in, in my configuration I use a directory on my munin apache vhost for it.

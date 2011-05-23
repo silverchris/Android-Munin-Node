@@ -1,0 +1,47 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+import sys
+import os
+import re
+import time
+import Munin_pb2
+import gzip
+
+id = os.path.basename(sys.argv[0]).split("_")[1]
+gzipped = "/home/www/munin/_android/data/%s"%id
+f = gzip.open(gzipped, 'rb')
+Plugins = Munin_pb2.Plugins()
+Plugins.ParseFromString(f.read())
+
+for Plugin in Plugins.plugin:
+	print(Plugin.name)
+
+timediff = time.time()-os.path.getmtime(gzipped)
+if timediff > 300:
+	valid = False
+else:
+	valid = True
+try:
+	if sys.argv[1] == "config":
+		config = True
+	else:
+		config = False
+except:
+	config = False
+	
+regex = re.compile('(\w+.\w+)')
+for Plugin in Plugins.plugin:
+	print("multigraph %s")%Plugin.name.replace(" ", "_")
+	if config == True:
+		 print Plugin.config
+	else:
+		sList = [line for line in Plugin.update.split(os.linesep)]
+		for line in sList:
+			if not line.strip():
+				continue
+			else:
+				if valid:
+					print line
+				else:
+					m = regex.search(line)
+					print "%s U"%m.group(0)
