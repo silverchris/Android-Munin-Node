@@ -69,6 +69,7 @@ public class fw_packets implements Plugin_API {
 		String forwarded = "";
 		try {
 			in = new BufferedReader(new FileReader("/proc/net/snmp"));
+			in.readLine();
 			String ipline =  in.readLine();
 			final Pattern ip = Pattern.compile("^Ip:[\\s]+[\\d]+[\\s]+[\\d]+[\\s]+([\\d]+)[\\s]+[\\d]+[\\s]+[\\d]+[\\s]+([\\d])+.*");
 			Matcher ip_matcher = ip.matcher(ipline);
