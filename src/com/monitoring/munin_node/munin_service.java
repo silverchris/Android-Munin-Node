@@ -87,7 +87,6 @@ public class munin_service extends Service{
            			UploadURL uploader = new UploadURL(Server,OUT);
                     uploader.Status();
         			Message msg = Message.obtain(handler, 43);
-        			//uploader.close();
     				handler.sendMessage(msg);
         		}
         	};
@@ -114,7 +113,6 @@ public class munin_service extends Service{
 							ErrorReporter.getInstance().handleException(e);
 						}
 			            editor.putLong("new_plugin_end_time", System.currentTimeMillis());
-						System.out.println("Finishing up");
 						final String Server = settings.getString("Server", "Server");
 						final String Passcode = settings.getString("Passcode", "Passcode");
 			            editor.putLong("new_upload_start_time", System.currentTimeMillis()).commit();
@@ -148,6 +146,7 @@ public class munin_service extends Service{
         	public void run(){
            		SharedPreferences settings = Context.getSharedPreferences("Munin_Node", 0);
         		Plugin_API plugin = (Plugin_API)PluginFactory.getPlugin(p);
+           		//Debug.startMethodTracing(p);
         		Boolean enabled = settings.getBoolean(plugin.getName(), true);
         		if(enabled){
         			if(plugin.needsContext()){
@@ -163,6 +162,7 @@ public class munin_service extends Service{
         			Message msg = Message.obtain(service_Handler, 42, bundle);
     				service_Handler.sendMessage(msg);
         		}
+        		//Debug.stopMethodTracing();
         		return;
         	}
         }

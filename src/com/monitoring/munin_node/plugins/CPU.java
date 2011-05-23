@@ -33,32 +33,28 @@ public class CPU implements Plugin_API{
 	}
 	@Override
 	public Void run(Handler handler) {
-		StringBuffer statbuffer = new StringBuffer();
-
+		String cpu = null;
 		try {
 			BufferedReader in = new BufferedReader(new FileReader("/proc/stat"));
-			String str;
-			while ((str = in.readLine()) != null) {
-				statbuffer.append(str);						
-			}
+			cpu = in.readLine();
 			in.close();
 		}
 		catch (IOException e) {}
 		Pattern extinfo_regex = Pattern.compile("^cpu +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+");
-		Matcher match1 = extinfo_regex.matcher(statbuffer.toString());
+		Matcher match1 = extinfo_regex.matcher(cpu);
 		boolean extinfo = false;
 		while (match1.find()) {
 			extinfo = true;
 		}
 		Pattern extextinfo_regex = Pattern.compile("^cpu +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+ +[0-9]+");
-		Matcher match2 = extextinfo_regex.matcher(statbuffer.toString());
+		Matcher match2 = extextinfo_regex.matcher(cpu);
 		boolean extextinfo = false;
 		while (match2.find()) {
 			extextinfo = true;
 		}
 		StringBuffer output = new StringBuffer();
 		Pattern cpunumber_regex = Pattern.compile("cpu[0-9]+");
-		Matcher match = cpunumber_regex.matcher(statbuffer.toString());
+		Matcher match = cpunumber_regex.matcher(cpu);
 		int NCPU = 0;
 		while (match.find()){
 			NCPU++;
@@ -117,7 +113,7 @@ public class CPU implements Plugin_API{
 
 		StringBuffer output2 = new StringBuffer();
 		Pattern split_regex = Pattern.compile("\\s+");
-		String[] items = split_regex.split(statbuffer.toString());
+		String[] items = split_regex.split(cpu);
         final SharedPreferences settings = context.getSharedPreferences("Munin_Node.CPU", 0);
         SharedPreferences.Editor editor = settings.edit();
         Long oldUser = settings.getLong("user", 0);

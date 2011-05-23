@@ -69,14 +69,12 @@ public class fw_packets implements Plugin_API {
 		String forwarded = "";
 		try {
 			in = new BufferedReader(new FileReader("/proc/net/snmp"));
-			String str;
+			String ipline =  in.readLine();
 			final Pattern ip = Pattern.compile("^Ip:[\\s]+[\\d]+[\\s]+[\\d]+[\\s]+([\\d]+)[\\s]+[\\d]+[\\s]+[\\d]+[\\s]+([\\d])+.*");
-			while ((str = in.readLine()) != null) {
-				Matcher ip_matcher = ip.matcher(str);
-				if(ip_matcher.find()){
-					received = ip_matcher.group(1);
-					forwarded = ip_matcher.group(2);
-				}
+			Matcher ip_matcher = ip.matcher(ipline);
+			if(ip_matcher.find()){
+				received = ip_matcher.group(1);
+				forwarded = ip_matcher.group(2);
 			}
 		} catch (FileNotFoundException e) {
 			received = "U";

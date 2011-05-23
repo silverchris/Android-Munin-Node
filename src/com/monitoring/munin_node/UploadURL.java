@@ -23,14 +23,12 @@ public class UploadURL {
 		    bin.writeTo(output);
 		    connection.connect();
 		    if (output != null) try { output.close(); } catch (IOException e){}
-		    int statusint = ((HttpURLConnection) connection).getResponseCode();
-		    if (statusint == 200){
+		    if (((HttpURLConnection) connection).getResponseCode() == 200){
 		    	status = true;
 		    }
 		    else{
 		    	status = false;
 		    }
-		    System.out.println("HTTP Status: "+statusint);
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -13,6 +13,7 @@ import android.os.Message;
 import com.monitoring.munin_node.plugin_api.Plugin_API;
 
 public class uptime implements Plugin_API{
+	static final String output = "graph_title Uptime\ngraph_args --base 1000 -l 0\ngraph_scale no\ngraph_vlabel uptime in days\ngraph_category system\nuptime.label uptime\nuptime.draw AREA";
 	public String getName(){
 		return "uptime";
 	}
@@ -31,31 +32,19 @@ public class uptime implements Plugin_API{
 	}
 	@Override
 	public Void run(Handler handler) {
-		StringBuffer output = new StringBuffer();
-		output.append("graph_title Uptime\n");
-		output.append("graph_args --base 1000 -l 0\n");
-		output.append("graph_scale no\n");
-		output.append("graph_vlabel uptime in days\n");
-		output.append("graph_category system\n");
-		output.append("uptime.label uptime\n");
-		output.append("uptime.draw AREA");
-		StringBuffer uptimebuffer = new StringBuffer();
-
+		String uptimestring = null;
 		try {
 			BufferedReader in = new BufferedReader(new FileReader("/proc/uptime"));
-			String str;
-			while ((str = in.readLine()) != null) {
-				uptimebuffer.append(str);						
-			}
+			uptimestring = in.readLine();
 			in.close();
 		}
 		catch (IOException e) {}
 		Pattern split_regex = Pattern.compile("\\s+");
-		String[] items = split_regex.split(uptimebuffer.toString());
+		String[] items = split_regex.split(uptimestring.toString());
 		Float uptime = Float.parseFloat(items[0])/86400;
 		Bundle bundle = new Bundle();
 		bundle.putString("name", this.getName());
-		bundle.putString("config", output.toString());
+		bundle.putString("config", output);
 		bundle.putString("update", "uptime.value "+uptime.toString());
 		Message msg = Message.obtain(handler, 42, bundle);
 		handler.sendMessage(msg);

@@ -66,7 +66,7 @@ public class interrupts implements Plugin_API {
 			in.close();
 		}
 		catch (IOException e) {}
-		Pattern intr_pattern = Pattern.compile("intr[\\s]+([\\d]+).*ctxt[\\s]+([\\d]+).*", Pattern.DOTALL);
+		final Pattern intr_pattern = Pattern.compile("intr[\\s]+([\\d]+).*ctxt[\\s]+([\\d]+).*", Pattern.DOTALL);
 		Matcher intr_matcher = intr_pattern.matcher(statbuffer.toString());
 		intr_matcher.find();
 		String intr = intr_matcher.group(1);
