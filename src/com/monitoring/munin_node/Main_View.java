@@ -1,9 +1,13 @@
 	package com.monitoring.munin_node;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings.Secure;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,6 +18,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class Main_View extends Activity{
@@ -33,6 +38,8 @@ public class Main_View extends Activity{
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new MyOnItemSelectedListener());
         final EditText server_text = (EditText) findViewById(R.id.Server);
+        final TextView android_id = (TextView) findViewById(R.id.ANDROID_ID);
+        android_id.setText("Android ID: "+Secure.getString(getBaseContext().getContentResolver(), Secure.ANDROID_ID));
         final Button save = (Button) findViewById(R.id.Save1);
         server_text.setText(Server);
         System.out.println(Server);
@@ -62,30 +69,43 @@ public class Main_View extends Activity{
     				toast.show();
     			}
     		};
-        	public void onClick(View v) {  
-        		new Thread(new Runnable(){
-        			public void run(){
-        				Server = server_text.getText().toString();
-        				Test_Settings test = new Test_Settings();
-        				Integer test_value = test.Run_Test(Server);
-        				String result = null;
-        				System.out.println(test_value);
-        				switch(test_value){
-        				case Test_Settings.OK:
-        					save_settings();
-        					result = "Saved Successfully";
-        					break;
-        				case Test_Settings.FAILURE:
-        					result = "General Failure, Check URL and try again";
-        					break;
-        				}
-    					Bundle bundle = new Bundle();
-            			bundle.putString("result", result);
-            			Message msg = Message.obtain(test_handler, 42, bundle);
-    					test_handler.sendMessage(msg);
-        			}
-        		}
-        		).start();
+    		public void onClick(View v) {
+    			Pattern URL = Pattern.compile("http\\:\\/\\/.+\\/$");
+    			Matcher match1 = URL.matcher(server_text.getText().toString());
+    			Boolean ok = false;
+    			while (match1.find()) {
+    				ok = true;
+    			}
+    			if (ok){
+    				new Thread(new Runnable(){
+    					public void run(){
+    						Server = server_text.getText().toString();
+    						Test_Settings test = new Test_Settings();
+    						Integer test_value = test.Run_Test(Server);
+    						String result = null;
+    						System.out.println(test_value);
+    						switch(test_value){
+    						case Test_Settings.OK:
+    							save_settings();
+    							result = "Saved Successfully";
+    							break;
+    						case Test_Settings.FAILURE:
+    							result = "General Failure, Check URL and try again";
+    							break;
+    						}
+    						Bundle bundle = new Bundle();
+    						bundle.putString("result", result);
+    						Message msg = Message.obtain(test_handler, 42, bundle);
+    						test_handler.sendMessage(msg);
+    					}
+    				}
+    				).start();
+    			}
+    			else{
+    				Toast toast = Toast.makeText(Main_View.this,"URL is Invalid" , Toast.LENGTH_LONG);
+    				toast.setGravity(Gravity.BOTTOM, -30, 50);
+    				toast.show();
+    			}
         		}   
         	});
         CheckBox onboot = (CheckBox) findViewById(R.id.onBoot);

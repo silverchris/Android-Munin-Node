@@ -8,6 +8,8 @@
     	    <TextView android:id="@+id/textView3" android:layout_width="wrap_content" android:text="Minutes" android:layout_height="wrap_content" android:layout_toRightOf="@+id/spinner1" android:layout_below="@+id/Server" android:layout_marginTop="15dp"></TextView>
         	<TextView android:id="@+id/textView4" android:layout_width="wrap_content" android:text="Start Service On Boot" android:layout_height="wrap_content" android:layout_below="@+id/spinner1" android:layout_marginTop="15dp"></TextView>
         	<CheckBox android:layout_width="wrap_content" android:text="" android:layout_height="wrap_content" android:id="@+id/onBoot" android:layout_below="@+id/spinner1" android:layout_toRightOf="@+id/textView4"></CheckBox>
-        	<Button android:layout_width="wrap_content" android:id="@+id/Save1" android:layout_height="wrap_content" android:text="Save" android:layout_alignParentBottom="true" android:layout_below="@+id/onBoot"></Button>
+        	<Button android:layout_width="wrap_content" android:id="@+id/Save1" android:layout_height="wrap_content" android:text="Save" android:layout_below="@+id/onBoot"></Button>
+        	<TextView android:id="@+id/ANDROID_ID" android:layout_width="wrap_content" android:text="Android ID:" android:layout_height="wrap_content" android:layout_below="@+id/Save1" android:layout_marginTop="20dp"></TextView>
+        	
     	</RelativeLayout>
 	</ScrollView>

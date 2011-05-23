@@ -21,6 +21,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.PowerManager;
+import android.provider.Settings.Secure;
 
 import com.monitoring.munin_node.protos.Plugins;
 import com.monitoring.munin_node.plugin_api.LoadPlugins;
@@ -113,7 +114,8 @@ public class munin_service extends Service{
 							ErrorReporter.getInstance().handleException(e);
 						}
 			            editor.putLong("new_plugin_end_time", System.currentTimeMillis());
-						final String Server = settings.getString("Server", "Server");
+						String Server = settings.getString("Server", "Server");
+						Server = Server+Secure.getString(getBaseContext().getContentResolver(), Secure.ANDROID_ID);
 			            editor.putLong("new_upload_start_time", System.currentTimeMillis()).commit();
 						new upload_thread(this,Server,out).start();
 						try {
