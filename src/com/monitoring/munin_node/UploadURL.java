@@ -8,27 +8,45 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class UploadURL {
+import android.os.Handler;
+import android.os.Message;
+
+public class UploadURL extends Thread {
 	final static String charset = "UTF-8";
 	boolean status = false;
-	public UploadURL(String url, ByteArrayOutputStream bin){
+	Handler handler = null;
+	String Server = null;
+	ByteArrayOutputStream OUT = null;
+	public  UploadURL(Handler newhandler, String server, ByteArrayOutputStream out){
+		handler = newhandler;
+		Server = server;
+		OUT = out;
+	}
+	@Override
+	public void run(){
 		try {
-			URLConnection connection = new URL(url).openConnection();
+			URLConnection connection = new URL(Server).openConnection();
 			connection.setDoOutput(true); // Triggers POST.
 			connection.setRequestProperty("Accept-Charset", charset);
 			connection.setRequestProperty("Content-Type", "application/octet-stream");
-			connection.setRequestProperty("Content-Length", Integer.toString(bin.size()));
+			connection.setRequestProperty("Content-Length", Integer.toString(OUT.size()));
 			OutputStream output = null;
 			output = connection.getOutputStream();
-		    bin.writeTo(output);
-		    connection.connect();
-		    if (output != null) try { output.close(); } catch (IOException e){}
-		    if (((HttpURLConnection) connection).getResponseCode() == 200){
-		    	status = true;
-		    }
-		    else{
-		    	status = false;
-		    }
+			OUT.writeTo(output);
+			connection.connect();
+			if (output != null) try { output.close(); } catch (IOException e){}
+			if (((HttpURLConnection) connection).getResponseCode() == 200){
+				status = true;
+				output = null;
+				OUT = null;
+				connection = null;
+			}
+			else{
+				status = false;
+				output = null;
+				OUT = null;
+				connection = null;
+			}
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -36,8 +54,11 @@ public class UploadURL {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	public boolean Status(){
-		return status;
+		Message msg = Message.obtain(handler, 43);
+		handler.sendMessage(msg);
+		OUT = null;
+		Server = null;
+		handler = null;
+		return;
 	}
 }

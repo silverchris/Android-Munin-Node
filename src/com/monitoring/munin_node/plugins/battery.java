@@ -77,6 +77,13 @@ public class battery implements Plugin_API {
 		bundle.putString("update", output2.toString());
 		Message msg = Message.obtain(handler, 42, bundle);
 		handler.sendMessage(msg);
+		output = null;
+		output2 = null;
+		Battery_unscaled = null;
+		Battery_scale = null;
+		Battery_value = null;
+		temp = null;
+		volt = null;
 		return null;
 	}
 }

@@ -2,6 +2,7 @@ package com.monitoring.munin_node;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
@@ -12,11 +13,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -30,7 +31,7 @@ import com.monitoring.munin_node.plugin_api.Plugin_API;
 
 public class munin_service extends Service{
 	final int MUNIN_NOTIFICATION = 1;
-
+    List<Plugin_API> plugin_objects;
     @Override
     public void onDestroy() {
 		String ns = Context.NOTIFICATION_SERVICE;
@@ -73,24 +74,12 @@ public class munin_service extends Service{
 					return false;
 				}
 			}
+			public void Reset(){
+				ran = 0;
+				done = 0;
+			}
 		}
-		class upload_thread extends Thread{
-			Handler handler = null;
-        	String Server = null;
-        	ByteArrayOutputStream OUT = null;
-        	public  upload_thread(Handler newhandler, String server, ByteArrayOutputStream out){
-    			handler = newhandler;
-            	Server = server;
-            	OUT = out;
-        	}
-           	@Override
-        	public void run(){
-           			UploadURL uploader = new UploadURL(Server,OUT);
-                    uploader.Status();
-        			Message msg = Message.obtain(handler, 43);
-    				handler.sendMessage(msg);
-        		}
-        	};
+
 		final Count count = new Count();
 		final Plugins.Builder plugins = Plugins.newBuilder();
 		final Handler service_Handler = new Handler(){
@@ -104,12 +93,15 @@ public class munin_service extends Service{
 					plugins.addPlugin(plugin);
 					count.doneincrement();
 					if(count.Done()){
+						count.Reset();
 						ByteArrayOutputStream out = new ByteArrayOutputStream();
 						GZIPOutputStream gzipped = null;
 						try {
 							gzipped = new GZIPOutputStream(out);
 							plugins.build().writeTo(gzipped);
 							gzipped.close();
+							gzipped = null;
+							plugins.clear();
 						} catch (IOException e) {
 							ErrorReporter.getInstance().handleException(e);
 						}
@@ -117,9 +109,10 @@ public class munin_service extends Service{
 						String Server = settings.getString("Server", "Server");
 						Server = Server+Secure.getString(getBaseContext().getContentResolver(), Secure.ANDROID_ID);
 			            editor.putLong("new_upload_start_time", System.currentTimeMillis()).commit();
-						new upload_thread(this,Server,out).start();
+						new UploadURL(this,Server,out).start();
 						try {
 							out.close();
+							out = null;
 						} catch (IOException e) {
 							ErrorReporter.getInstance().handleException(e);
 						}
@@ -130,13 +123,35 @@ public class munin_service extends Service{
 					System.out.println("Upload Finished");
 					mNotificationManager.cancel(MUNIN_NOTIFICATION);//Cancel Notification that the "service" is running
 			        editor.putLong("end_time", System.currentTimeMillis()).commit();
-					wakeLock.release();
+			        Integer loopcount = settings.getInt("count", 0);
+			        System.out.println("Loop: "+loopcount);
+			        if (loopcount == 500){
+			        	try {
+				        	editor.putInt("count", 0).commit();
+				        	if (settings.getBoolean("enabled", true)){
+				        		editor.putBoolean("enabled", false).commit();
+				        		Debug.dumpHprofData("/sdcard/munin.hprof");
+				        	}
+			        	} catch (IOException e) {
+			        		// TODO Auto-generated catch block
+			        		e.printStackTrace();
+			        	}
+			        }
+			        else if(loopcount >500){
+			        	editor.putInt("count", 0).commit();
+			        }
+			        else{
+			        	editor.putInt("count", loopcount+1).commit();
+			        }
+			        System.gc();
+			        wakeLock.release();
+					
 				}
 			}
 		};
         LoadPlugins loadplugins = new LoadPlugins();
         List<String> plugin_list = loadplugins.getPluginList(context);
-        class plugin_thread extends Thread{
+        /*class plugin_thread extends Thread{
         	Context Context = null;
         	String p = null;
         	public plugin_thread(Context newcontext, String newp){
@@ -147,7 +162,6 @@ public class munin_service extends Service{
         	public void run(){
            		SharedPreferences settings = Context.getSharedPreferences("Munin_Node", 0);
         		Plugin_API plugin = (Plugin_API)PluginFactory.getPlugin(p);
-           		//Debug.startMethodTracing(p);
         		Boolean enabled = settings.getBoolean(plugin.getName(), true);
         		if(enabled){
         			if(plugin.needsContext()){
@@ -163,18 +177,42 @@ public class munin_service extends Service{
         			Message msg = Message.obtain(service_Handler, 42, bundle);
     				service_Handler.sendMessage(msg);
         		}
-        		//Debug.stopMethodTracing();
         		return;
         	}
-        }
+        }*/
         editor.putLong("new_plugin_start_time", System.currentTimeMillis());
         editor.commit();
-        for(final String p : plugin_list){
+        if (plugin_objects == null){
+        	plugin_objects = new ArrayList<Plugin_API>();
+        	for (String p :plugin_list){
+        		Plugin_API plugin = (Plugin_API)PluginFactory.getPlugin(p);
+        		Boolean enabled = settings.getBoolean(plugin.getName(), true);
+        		if(plugin.needsContext()){
+        			plugin.setContext(this);
+        		}
+        		if(enabled){
+        			count.ranincrement();
+        			plugin.run(service_Handler);
+        		}
+        		plugin_objects.add(plugin);
+        	}
+        }
+        else{
+        	for(Plugin_API plugin : plugin_objects){
+        		Boolean enabled = settings.getBoolean(plugin.getName(), true);
+        		if(enabled){
+        			count.ranincrement();
+        			plugin.run(service_Handler);
+        		}
+        	}
+        }
+        /*for(final String p : plugin_list){
         	plugin_thread thread = new plugin_thread(this,p);
         	thread.setDaemon(true);
-        	thread.run();
+        	thread.setName(p);
+        	thread.start();
         	count.ranincrement();
-        }
+        }*/
 		return START_NOT_STICKY;
 	}
 

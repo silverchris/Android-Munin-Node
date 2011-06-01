@@ -25,9 +25,12 @@ public class munin_node extends TabActivity {
 	        SharedPreferences settings = getSharedPreferences("Munin_Node", 0);
 	        SharedPreferences.Editor editor = settings.edit();
 			editor.putBoolean("Service_Running", false);
+			editor.putBoolean("enabled", true).commit();
 			editor.commit();
 		}
-
+        SharedPreferences settings = getSharedPreferences("Munin_Node", 0);
+        SharedPreferences.Editor editor = settings.edit();
+		editor.putBoolean("enabled", true).commit();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -89,6 +92,7 @@ public class munin_node extends TabActivity {
             }
     		alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
     		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+1000, 60000*Update_Interval, pendingIntent);
+    		//alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+1000, 5000, pendingIntent);
     		editor.putBoolean("Service_Running", true);
     		editor.commit();
             return true;

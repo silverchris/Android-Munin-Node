@@ -51,6 +51,9 @@ public class android_uptime implements Plugin_API{
 		bundle.putString("update", "booted.value "+booted.toString()+"\nawake.value "+awake.toString());
 		Message msg = Message.obtain(service_Handler, 42, bundle);
 		service_Handler.sendMessage(msg);
+		output = null;
+		booted = null;
+		awake = null;
 		return null;
 	}
 
