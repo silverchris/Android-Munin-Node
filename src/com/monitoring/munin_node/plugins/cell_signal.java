@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
