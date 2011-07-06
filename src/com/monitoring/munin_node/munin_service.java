@@ -123,26 +123,6 @@ public class munin_service extends Service{
 					System.out.println("Upload Finished");
 					mNotificationManager.cancel(MUNIN_NOTIFICATION);//Cancel Notification that the "service" is running
 			        editor.putLong("end_time", System.currentTimeMillis()).commit();
-			        Integer loopcount = settings.getInt("count", 0);
-			        System.out.println("Loop: "+loopcount);
-			        if (loopcount == 500){
-			        	try {
-				        	editor.putInt("count", 0).commit();
-				        	if (settings.getBoolean("enabled", true)){
-				        		editor.putBoolean("enabled", false).commit();
-				        		Debug.dumpHprofData("/sdcard/munin.hprof");
-				        	}
-			        	} catch (IOException e) {
-			        		// TODO Auto-generated catch block
-			        		e.printStackTrace();
-			        	}
-			        }
-			        else if(loopcount >500){
-			        	editor.putInt("count", 0).commit();
-			        }
-			        else{
-			        	editor.putInt("count", loopcount+1).commit();
-			        }
 			        System.gc();
 			        wakeLock.release();
 					
