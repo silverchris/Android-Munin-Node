@@ -107,7 +107,7 @@ public class network_traffic implements Plugin_API {
 		//bundle.putString("config", transconfig.toString());
 		//bundle.putString("update", transvalue.toString());
 		bundle.putString("config", transconfig.toString()+errorconfig.toString());
-		bundle.putString("update", transvalue.toString()+errorvalue.toString());
+		bundle.putString("update", transvalue.toString()+"\nmultigraph Network_Errors\n"+errorvalue.toString());
 		Message msg = Message.obtain(handler, 42, bundle);
 		handler.sendMessage(msg);
 		return null;
